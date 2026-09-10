@@ -137,13 +137,12 @@ public class MainActivity extends Activity {
         if (snapshot == null || snapshot.isEmpty()) return;
 
         String escaped = snapshot
-            .replace("\", "\\")
-            .replace("'", "\'")
-            .replace("
-", "\n")
-            .replace("", "\r")
-            .replace(" ", "\u2028")
-            .replace(" ", "\u2029");
+            .replace("\\", "\\\\")
+            .replace("'", "\\'")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\u2028", "\\u2028")
+            .replace("\u2029", "\\u2029");
 
         String js =
             "(function(){try{var o=JSON.parse('" + escaped + "');"
@@ -240,3 +239,4 @@ public class MainActivity extends Activity {
         }
     }
 }
+ 
