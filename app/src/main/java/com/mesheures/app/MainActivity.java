@@ -39,15 +39,29 @@ public class MainActivity extends Activity {
 
         backupPrefs = getSharedPreferences(PREFS, MODE_PRIVATE);
 
-        // Android 15 / targetSdk 35 : gestion correcte des zones système.
+        // Pixel / Android 17 : gestion explicite des zones système.
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().setStatusBarColor(0xFF07100D);
         getWindow().setNavigationBarColor(0xFF07100D);
 
+        // Android 15/17 : le système peut placer les fenêtres sous les barres.
+        // On utilise un conteneur plein écran qui réserve explicitement les
+        // zones système, puis le WebView occupe uniquement la zone disponible.
+        android.widget.FrameLayout root = new android.widget.FrameLayout(this);
+        root.setBackgroundColor(0xFF07100D);
+
         web = new WebView(this);
         web.setBackgroundColor(0xFF07100D);
 
-        ViewCompat.setOnApplyWindowInsetsListener(web, (view, insets) -> {
+        root.addView(
+            web,
+            new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        );
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
             Insets bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
                     | WindowInsetsCompat.Type.displayCutout()
@@ -63,7 +77,7 @@ public class MainActivity extends Activity {
             return insets;
         });
 
-        setContentView(web);
+        setContentView(root);
         setupWebView();
 
         if (Build.VERSION.SDK_INT >= 33
