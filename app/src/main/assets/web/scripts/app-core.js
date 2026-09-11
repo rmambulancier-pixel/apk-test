@@ -3,14 +3,14 @@ const DEF={
   nom:'',emb:'2019-09-09',
   taux:14.02,net:0.787,
   hab:10,habT:12.9688,
-  idaj:12,base:35,pl:16,
+  idaj:12,base:35,pl:8,
   ir:5.30,iru:9.69,irT:10.40,
   rc:420,cp:420,anc:0,
-  min:false,maxAmp:14,
+  min:false,maxAmp:12,
   anchor:'2025-05-19',
-  panDeb:'11:45',panFin:'14:15',
-  dimPrime:0,
-  nuitDeb:'21:00',nuitFin:'06:00',nuitMaj:0,
+  panDeb:'11:00',panFin:'14:30',
+  dimPrime:23.90,
+  nuitDeb:'22:00',nuitFin:'05:00',nuitMaj:0,
   rcAlerte:400
 };
 let DB={s:{...DEF},days:{},cmp:{},periods:[],bul:{},bulletins:[],romi:{},per:{start:'2025-05-19',nb:1},exp:null};

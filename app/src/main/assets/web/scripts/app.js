@@ -438,7 +438,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catc
    V15 — INTELLIGENCE / SÉCURITÉ / MODE PRO
    Couche additive : ne modifie pas les règles de calcul historiques.
 ═══════════════════════════════════════════════ */
-const MH_V='16.2.3';
+const MH_V='16.2.4';
 
 function mhMonthStats(ym){
   const [y,m]=ym.split('-').map(Number), last=isoOf(new Date(y,m,0));
@@ -607,11 +607,11 @@ function renderAudit(){
   const total=hard*4+warn; const score=Math.max(0,Math.min(100,100-total*5)); host.innerHTML=`<div class="audit-health"><div><span>ÉTAT DU MOIS</span><b>${score}/100</b></div><strong>${score>=90?'🟢 Planning cohérent':score>=70?'🟠 Points à vérifier':'🔴 Contrôle nécessaire'}</strong><small>${unique.length?unique.length+' point(s) détecté(s)':'Aucune anomalie détectée'}</small></div><div class="audit-strip"><span>🔎 ${seen.size} période(s)</span><span class="${hard?'bad-text':'ok-text'}">🔴 ${hard} critique(s)</span><span class="${warn?'warn-text':'ok-text'}">🟠 ${warn} attention(s)</span><span>🟢 contrôle terminé</span></div>`+host.innerHTML;
 }
 
-/* Export V16.2.3 : enveloppe versionnée, import compatible avec les anciens JSON. */
+/* Export V15 : enveloppe versionnée, import compatible avec les anciens JSON. */
 function expo(){
   const now=new Date().toISOString();
   DB.exp=new Date().toLocaleDateString('fr-FR');save();
-  const payload={format:'MesHeures Backup',version:MH_V,exportedAt:now,app:'MesHeures',data:DB};if(window.MesHeuresAndroid&&MesHeuresAndroid.saveLocalStorage)try{MesHeuresAndroid.saveLocalStorage(JSON.stringify(localStorageToObject()))}catch(e){}
+  const payload={format:'MesHeures Backup',version:MH_V,exportedAt:now,data:DB};
   const b=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mesheures-v16-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);renderReg();
 }
@@ -623,7 +623,7 @@ function impo(i){
     if(!confirm('Importer cette sauvegarde et remplacer les données actuelles ?\n\nUne exportation de sécurité sera créée avant remplacement.'))return;
     /* sécurité : copie locale avant remplacement */
     localStorage.setItem(LS+'_preimport',JSON.stringify(DB));
-    pushUndo('Import JSON V16.2.3');
+    pushUndo('Import JSON V15');
     DB={...DB,...j};DB.s={...DEF,...(j.s||{})};DB.periods=j.periods||[];DB.bul=j.bul||{};DB.bulletins=j.bulletins||[];DB.romi=j.romi||{};
     save();renderAll();alert('✅ Import réussi — sauvegarde de sécurité locale créée.');
   }catch(x){alert('Fichier illisible : '+x.message)}finally{i.value=''}};r.readAsText(f);
@@ -633,10 +633,8 @@ function mhRestorePreImport(){
   if(!confirm('Restaurer la sauvegarde juste avant le dernier import ?'))return;
   try{DB=JSON.parse(raw);save();renderAll();alert('✅ Sauvegarde pré-import restaurée.')}catch(e){alert('Restauration impossible : '+e.message)}
 }
-function localStorageToObject(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);o[k]=localStorage.getItem(k)}return o;}
-
 function mhBackupLocal(){
-  localStorage.setItem(LS+'_manual',JSON.stringify(DB));DB.exp=new Date().toLocaleDateString('fr-FR');if(window.MesHeuresAndroid&&MesHeuresAndroid.saveLocalStorage)try{MesHeuresAndroid.saveLocalStorage(JSON.stringify(localStorageToObject()))}catch(e){}localStorage.setItem(LS+'_manualAt',new Date().toISOString());save();renderReg();alert('✅ Point de restauration local créé.');
+  localStorage.setItem(LS+'_manual',JSON.stringify(DB));DB.exp=new Date().toLocaleDateString('fr-FR');localStorage.setItem(LS+'_manualAt',new Date().toISOString());save();renderReg();alert('✅ Point de restauration local créé.');
 }
 function mhRestoreLocal(){
   const raw=localStorage.getItem(LS+'_manual');if(!raw)return alert('Aucun point de restauration local.');
@@ -650,7 +648,7 @@ function mhAutoBackup(){
     const last=Number(localStorage.getItem(LS+'_autoAt')||0),now=Date.now();
     if(!last || now-last>24*60*60*1000){
       localStorage.setItem(LS+'_auto',JSON.stringify(DB));
-      localStorage.setItem(LS+'_autoAt',new Date(now).toISOString());if(window.MesHeuresAndroid&&MesHeuresAndroid.saveLocalStorage)try{MesHeuresAndroid.saveLocalStorage(JSON.stringify(localStorageToObject()))}catch(e){}
+      localStorage.setItem(LS+'_autoAt',new Date(now).toISOString());
     }
   }catch(e){console.warn('Sauvegarde auto impossible',e)}
 }
@@ -665,7 +663,7 @@ function renderReg(){
   renderRegBase();
   const bk=$('rBk');if(!bk)return;
   if(!document.getElementById('mhSecurity')){
-    const c=document.createElement('div');c.id='mhSecurity';c.className='security-box';c.innerHTML=`<div class="security-title">🛡️ Centre de sauvegarde V16.2.3</div><div class="security-actions"><button class="g" onclick="mhBackupLocal()">💾 Point local</button><button class="g" onclick="mhRestoreLocal()">↩️ Restaurer</button><button class="g" onclick="mhRestoreAuto()">♻️ Auto</button><button class="g" onclick="expo()">⬇️ JSON</button><button class="g" onclick="$('impJ').click()">⬆️ Import JSON</button><button class="g" onclick="mhRestorePreImport()">🧯 Annuler import</button></div><div class="backup-help">LocalStorage + point de restauration + sauvegarde automatique + export JSON. Sur Android, une copie supplémentaire est conservée par l'application.</div><label class="pro-switch"><input type="checkbox" id="mhProMode" onchange="mhTogglePro()"> Mode professionnel</label>`;bk.parentNode.insertBefore(c,bk.nextSibling);
+    const c=document.createElement('div');c.id='mhSecurity';c.className='security-box';c.innerHTML=`<div class="security-title">🛡️ Centre de sauvegarde V16</div><div class="security-actions"><button class="g" onclick="mhBackupLocal()">💾 Point local</button><button class="g" onclick="mhRestoreLocal()">↩️ Restaurer</button><button class="g" onclick="mhRestoreAuto()">♻️ Auto</button><button class="g" onclick="mhRestorePreImport()">🧯 Annuler import</button></div><label class="pro-switch"><input type="checkbox" id="mhProMode" onchange="mhTogglePro()"> Mode professionnel</label>`;bk.parentNode.insertBefore(c,bk.nextSibling);
   }
   $('mhProMode').checked=!!DB.s.proMode;
   document.body.classList.toggle('pro-mode',!!DB.s.proMode);
@@ -693,7 +691,7 @@ function mhDecoratePages(){
   });
 }
 
-if($('mhVersion'))$('mhVersion').textContent='V16.2.3';
+if($('mhVersion'))$('mhVersion').textContent='V16.2.4';
 mhDecoratePages();
 mhAutoBackup();
-setTimeout(()=>{try{renderAll()}catch(e){console.error('V16.2.3 render',e)}},0);
+setTimeout(()=>{try{renderAll()}catch(e){console.error('V15 render',e)}},0);
