@@ -8,7 +8,7 @@
  * - contrôle automatique de cohérence de période
  * - détail transparent du brut estimé
  * - résumé copiable
- * - version affichée uniformément en V16.2.0 tant que le socle APK reste 16.2
+ * - version affichée uniformément en V16.2.3 tant que le socle APK reste 16.2
  *
  * Aucun changement du moteur calcPer().
  */
@@ -44,18 +44,18 @@
   }
 
   function syncVersion() {
-    document.title = document.title.replace(/V16\.1(?:\.0)?|V16\.2(?:\.0)?/g, 'V16.2');
+    document.title = document.title.replace(/V16\.1(?:\.0)?|V16\.2(?:\.0)?|V16\.2\.3/g, 'V16.2.3');
     const meta = document.querySelector('meta[name="application-version"]');
-    if (meta) meta.setAttribute('content','16.2.0');
+    if (meta) meta.setAttribute('content','16.2.3');
 
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
     nodes.forEach(n => {
-      if (/V16\.1\.0|V16\.2\.0/.test(n.nodeValue || '')) {
+      if (/V16\.1\.0|V16\.2\.0|V16\.2\.3/.test(n.nodeValue || '')) {
         n.nodeValue = n.nodeValue
-          .replace(/V16\.1\.0/g,'V16.2.0')
-          .replace(/V16\.2\.0/g,'V16.2.0');
+          .replace(/V16\.1\.0/g,'V16.2.3')
+          .replace(/V16\.2\.0/g,'V16.2.3');
       }
     });
   }

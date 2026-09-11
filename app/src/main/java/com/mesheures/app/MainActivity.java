@@ -219,7 +219,7 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface public String platform() { return "android"; }
 
-        @JavascriptInterface public String version() { return "16.2.1"; }
+        @JavascriptInterface public String version() { return "16.2.3"; }
 
         @JavascriptInterface
         public void saveLocalStorage(String json) {
