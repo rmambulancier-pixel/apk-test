@@ -76,12 +76,20 @@ public class MainActivity extends Activity {
 
         web.loadUrl("file:///android_asset/web/index.html");
 
-        // V16.2.1: native splash watchdog. External PWA resources can keep the
-        // browser load event pending; never leave the user stuck on the splash.
-        web.postDelayed(() -> web.evaluateJavascript(
-            "(function(){var s=document.getElementById(\"mhSplash\");if(s)s.classList.add(\"off\");})();",
+        // V16.2.2: the splash must never depend on window.onload or CDN completion.
+        // WebView can execute this while deferred external resources are still pending.
+        dismissSplashSoon();
+    }
+
+    private void dismissSplashSoon() {
+        Runnable hide = () -> web.evaluateJavascript(
+            "(function(){try{var s=document.getElementById('mhSplash');if(s){s.classList.add('off');s.style.opacity='0';s.style.visibility='hidden';s.style.pointerEvents='none';}}catch(e){}})();",
             null
-        ), 1800);
+        );
+        web.postDelayed(hide, 250);
+        web.postDelayed(hide, 700);
+        web.postDelayed(hide, 1500);
+        web.postDelayed(hide, 3000);
     }
 
     private void setupWebView() {
@@ -98,8 +106,15 @@ public class MainActivity extends Activity {
 
         web.setWebViewClient(new WebViewClient() {
             @Override
+            public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                dismissSplashSoon();
+            }
+
+            @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                dismissSplashSoon();
                 restoreLocalStorage();
                 installAutoBackup();
             }
@@ -246,4 +261,3 @@ public class MainActivity extends Activity {
         }
     }
 }
- 
