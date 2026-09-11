@@ -75,6 +75,13 @@ public class MainActivity extends Activity {
         }
 
         web.loadUrl("file:///android_asset/web/index.html");
+
+        // V16.2.1: native splash watchdog. External PWA resources can keep the
+        // browser load event pending; never leave the user stuck on the splash.
+        web.postDelayed(() -> web.evaluateJavascript(
+            "(function(){var s=document.getElementById(\"mhSplash\");if(s)s.classList.add(\"off\");})();",
+            null
+        ), 1800);
     }
 
     private void setupWebView() {
@@ -137,13 +144,12 @@ public class MainActivity extends Activity {
         if (snapshot == null || snapshot.isEmpty()) return;
 
         String escaped = snapshot
-            .replace("\", "\\")
-            .replace("'", "\'")
-            .replace("
-", "\n")
-            .replace("", "\r")
-            .replace(" ", "\u2028")
-            .replace(" ", "\u2029");
+            .replace("\\", "\\\\")
+            .replace("'", "\\'")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\u2028", "\\u2028")
+            .replace("\u2029", "\\u2029");
 
         String js =
             "(function(){try{var o=JSON.parse('" + escaped + "');"
@@ -198,7 +204,7 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface public String platform() { return "android"; }
 
-        @JavascriptInterface public String version() { return "16.2.0"; }
+        @JavascriptInterface public String version() { return "16.2.1"; }
 
         @JavascriptInterface
         public void saveLocalStorage(String json) {

@@ -3,15 +3,13 @@ plugins { id 'com.android.application' }
 android {
     namespace 'com.mesheures.app'
     compileSdk 35
-
     defaultConfig {
         applicationId 'com.mesheures.app'
         minSdk 26
         targetSdk 35
-        versionCode 1620
-        versionName '16.2.0'
+        versionCode 1621
+        versionName '16.2.1'
     }
-
     signingConfigs {
         release {
             def ks = System.getenv('MESHEURES_KEYSTORE')
@@ -26,17 +24,12 @@ android {
             }
         }
     }
-
     buildTypes {
         release {
-            if (System.getenv('MESHEURES_KEYSTORE')) {
-                signingConfig signingConfigs.release
-            }
+            if (System.getenv('MESHEURES_KEYSTORE')) signingConfig signingConfigs.release
             minifyEnabled false
         }
     }
 }
 
-dependencies {
-    implementation 'androidx.core:core:1.15.0'
-}
+dependencies { implementation 'androidx.core:core:1.15.0' }
