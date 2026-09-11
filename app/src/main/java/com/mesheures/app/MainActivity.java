@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
 
         web.loadUrl("file:///android_asset/web/index.html");
 
-        // V16.2.2: the splash must never depend on window.onload or CDN completion.
+        // V17: the splash must never depend on window.onload or CDN completion.
         // WebView can execute this while deferred external resources are still pending.
         dismissSplashSoon();
     }
@@ -219,7 +219,7 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface public String platform() { return "android"; }
 
-        @JavascriptInterface public String version() { return "16.2.4"; }
+        @JavascriptInterface public String version() { return "17.0.0"; }
 
         @JavascriptInterface
         public void saveLocalStorage(String json) {

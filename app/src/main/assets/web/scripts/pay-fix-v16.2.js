@@ -1,4 +1,4 @@
-/* MesHeures V16.2.4 PRO — Paie / Quatorzaines
+/* MesHeures V17 Paie — Paie / Quatorzaines
  * Correctif autonome chargé après app.js.
  *
  * - 2 ou 3 quatorzaines, jamais 1
@@ -8,7 +8,7 @@
  * - contrôle automatique de cohérence de période
  * - détail transparent du brut estimé
  * - résumé copiable
- * - version affichée uniformément en V16.2.4 tant que le socle APK reste 16.2
+ * - version affichée uniformément en V17.0.0 tant que le socle APK reste 16.2
  *
  * Aucun changement du moteur calcPer().
  */
@@ -44,9 +44,9 @@
   }
 
   function syncVersion() {
-    document.title = document.title.replace(/V16\.1(?:\.0)?|V16\.2(?:\.0|\.1|\.2|\.3|\.4)?/g, 'V16.2.4');
+    document.title = document.title.replace(/V16\.1(?:\.0)?|V16\.2(?:\.0)?/g, 'V16.2');
     const meta = document.querySelector('meta[name="application-version"]');
-    if (meta) meta.setAttribute('content','16.2.4');
+    if (meta) meta.setAttribute('content','16.2.0');
 
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const nodes = [];
@@ -54,8 +54,8 @@
     nodes.forEach(n => {
       if (/V16\.1\.0|V16\.2\.0/.test(n.nodeValue || '')) {
         n.nodeValue = n.nodeValue
-          .replace(/V16\.1\.0/g,'V16.2.4')
-          .replace(/V16\.2\.0/g,'V16.2.4');
+          .replace(/V16\.1\.0/g,'V17.0.0')
+          .replace(/V16\.2\.0/g,'V17.0.0');
       }
     });
   }
@@ -177,7 +177,7 @@
       : '<tr><td colspan="3" class="mut">Détail indisponible.</td></tr>';
 
     panel.innerHTML = `
-      <h2>🧭 Contrôle paie · V16.2.4 PRO</h2>
+      <h2>🧭 Contrôle paie · V17 Paie</h2>
 
       <div class="al k">
         ✅ <b>${p.nb} quatorzaines</b> · ${short(p.start)} →

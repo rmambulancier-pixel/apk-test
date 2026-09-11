@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d1117">
-<title>MesHeures V16.2.4</title>
-<meta name="application-version" content="16.2.4">
+<title>MesHeures V17.0</title>
+<meta name="application-version" content="17.0.0">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./style/refonte.css?v=16.2.4">
-<script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<link rel="stylesheet" href="./style/refonte.css?v=17.0.0">
+<script async src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style id="mh-base">
 /* Styles de secours critiques : l'app reste correcte même si le CSS externe est encore en cache. */
 #mhSplash{position:fixed;inset:0;background:#0b1016;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:opacity .28s ease,visibility .28s ease}
@@ -112,11 +112,21 @@ tr.t{background:#1c2128}tr.t td{font-weight:700}
 /* premium fallback */
 /* Fallback premium UI: keeps the dashboard readable even when an old PWA cache serves the stylesheet. */
 .mh-dashboard{max-width:720px!important;margin:0 auto;padding-top:4px}.dash-head{display:flex;align-items:center;justify-content:space-between;padding:8px 2px 3px}.dash-brand{display:flex;align-items:center;gap:10px}.dash-logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#242a35,#141922);border:1px solid #343c48;font-size:21px}.dash-kicker{font-size:12px;letter-spacing:1.3px;font-weight:900}.dash-kicker span{display:inline-block;margin-left:5px;padding:2px 7px;border:1px solid #c6a84b;border-radius:999px;color:#e4c762;font-size:8px;vertical-align:2px}.dash-greeting{font-size:21px;font-weight:800;line-height:1.1;margin-top:3px}.dash-settings{width:43px;height:43px;border-radius:13px!important;padding:0!important}.dash-sub{color:var(--dim);font-size:11px;padding:4px 4px 12px}.hero-pro{position:relative;overflow:hidden;background:linear-gradient(145deg,#171d26,#0b0f14);border:1px solid #2b3541;border-radius:23px;padding:17px;margin-bottom:16px}.hero-pro-top{display:flex;align-items:center;justify-content:space-between}.hero-pro-title{font-size:15px;font-weight:800}.hero-play{width:42px;height:42px;border-radius:13px!important;background:#222a34!important;border:1px solid #35404d!important;padding:0!important;font-size:22px!important}.hero-time{font-size:52px;line-height:1;font-weight:900;letter-spacing:-2.5px;margin:17px 0 4px}.hero-caption{color:var(--dim);font-size:11px}.hero-chart{height:55px;display:flex;align-items:flex-end;gap:8px;margin-top:16px}.mini-day{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.mini-day i{display:block;width:100%;max-width:24px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#b98cff,#7454bf)}.mini-day i.today{background:linear-gradient(180deg,#64dd8f,#209c54)}.mini-day span{font-size:8px;color:#6f7a86}.section-head{display:flex;align-items:center;justify-content:space-between;margin:5px 2px 9px}.section-head h2{margin:0!important;color:#eef3f7!important;font-size:16px!important}.text-action{background:transparent!important;border:0!important;color:#8e9aaa!important;padding:2px!important;font-size:11px!important}.period-pill{font-size:9px;padding:5px 8px;border-radius:999px;background:#151c24;border:1px solid #29333e;color:#8793a0}.stat-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}.stat-card{border:1px solid #2a333e;border-radius:18px;padding:14px;background:linear-gradient(145deg,#171d25,#10151c);min-height:110px;display:flex;flex-direction:column;justify-content:space-between}.stat-card span{font-size:10px;color:#9aa4b0}.stat-card b{font-size:25px}.stat-card.purple b{color:#b98cff}.stat-card.gold b{color:#e3b84c}.activity-card,.dash-panel{background:linear-gradient(145deg,#151b22,#0f141a);border:1px solid #29333e;border-radius:19px;padding:12px;margin-bottom:10px}.activity-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.activity-day{min-height:74px!important;padding:9px 3px!important;border-radius:12px!important;background:#171e27!important;border:1px solid #28323e!important;display:flex;flex-direction:column;align-items:center;justify-content:space-between}.activity-day b{font-size:9px;color:#7d8996}.activity-day strong{font-size:13px}.activity-day.work strong{color:#65dc8e}.activity-day.night strong{color:#b98cff}.activity-day.leave strong{color:#e1b74d}.dash-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.panel-title{display:flex;justify-content:space-between;font-weight:800;font-size:12px;margin-bottom:11px}.big-inline{display:flex;flex-direction:column}.big-inline b,.pay-big{font-size:24px;font-weight:900}.dash-muted{font-size:9px;color:#778390}.dash-progress{height:7px;background:#202832;border-radius:999px;overflow:hidden;margin:12px 0 7px}.dash-progress i{display:block;height:100%;background:linear-gradient(90deg,#36b865,#71dd9a)}.pay-lines{display:grid;gap:5px;margin-top:10px}.pay-lines div{display:flex;justify-content:space-between;border-top:1px solid #28313b;padding-top:5px;font-size:9px}.dash-alert{width:100%;display:flex;align-items:center;gap:9px;text-align:left;background:#121820!important;border:1px solid #252f3a!important;color:var(--txt)!important;padding:9px!important;border-radius:11px!important;margin-bottom:6px}.dash-alert div{display:flex;flex-direction:column;min-width:0;flex:1}.dash-alert small{font-size:10px;overflow:hidden;text-overflow:ellipsis}.dash-ok{padding:11px;border-radius:11px;background:#102318;color:#6ddd96;font-size:10px}.audit-empty{padding:12px;border-radius:10px;background:#0d1117;border:1px dashed var(--line);color:var(--dim);font-size:12px}@media(max-width:600px){.mh-dashboard{padding-left:0;padding-right:0}.hero-time{font-size:47px}.dash-grid-2{grid-template-columns:1fr}.stat-card{min-height:105px}}
+
+/* V17 mobile navigation / legal / projection */
+.mh-v17-nav{display:none}
+.mh-v17-menu,.mh-v17-overlay{display:none;position:fixed;inset:0;background:#000b;z-index:100;align-items:flex-end}
+.mh-v17-menu.on{display:flex}.mh-v17-sheet,.mh-v17-dialog{width:100%;max-width:680px;margin:auto auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px;max-height:86vh;overflow:auto}
+.mh-v17-sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:17px}.mh-v17-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-v17-tools button{background:#21262d;border:1px solid var(--line);text-align:left}.mh-v17-theme{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}.mh-v17-theme>div{display:flex;gap:7px;margin-top:8px}.mh-v17-theme button{flex:1;background:#21262d}
+.mh-v17-projection{margin-top:10px}.mh-v17-proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.mh-v17-proj-grid>div{background:#0d1117;border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center}.mh-v17-proj-grid span{display:block;font-size:10px;color:var(--dim)}.mh-v17-proj-grid b{display:block;font-size:18px;margin-top:3px}.mh-v17-proj-grid b.ok{color:var(--ok)}.mh-v17-proj-grid b.warn{color:var(--warn)}.mh-v17-proj-grid b.bad{color:var(--bad)}.mh-v17-proj-note,.mh-v17-reg small{display:block;color:var(--dim);font-size:10px;margin-top:8px}.mh-v17-reg{margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}.mh-v17-back{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}.mh-v17-legal-list small{display:block;color:var(--dim);margin-top:3px}.mh-v17-overlay{display:flex}.mh-v17-dialog{margin:auto;border-radius:18px;max-height:85vh}.mh-v17-dialog hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+:root[data-theme="light"]{--bg:#f5f7f9;--card:#fff;--line:#d0d7de;--txt:#1f2328;--dim:#57606a;--ok:#1a7f37;--warn:#9a6700;--bad:#cf222e;--blue:#0969da;--pur:#8250df;--ora:#bc4c00} :root[data-theme="light"] body{background:var(--bg)}
+@media(max-width:700px){body{padding-bottom:76px}.tabs{display:none}.mh-v17-nav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:80;background:#0d1117f2;border-top:1px solid var(--line);backdrop-filter:blur(12px);padding:7px 6px calc(7px + env(safe-area-inset-bottom));gap:5px}.mh-v17-nav button{flex:1;background:transparent;color:var(--dim);border:0;padding:6px 2px;font-size:18px;line-height:1}.mh-v17-nav button span{display:block;font-size:9px;margin-top:3px;font-weight:700}.mh-v17-nav button:active,.mh-v17-nav button:hover{color:#fff}.mh-v17-proj-grid{grid-template-columns:1fr 1fr 1fr}.mh-v17-tools{grid-template-columns:1fr 1fr}}
+@media(min-width:701px){.mh-v17-nav{display:flex;position:fixed;right:18px;bottom:18px;z-index:80;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;gap:4px}.mh-v17-nav button{background:#21262d}.mh-v17-nav button span{font-size:10px;margin-left:4px}}
 </style>
 </head>
 <body><div id="mhSplash"><img src="./icon.svg" alt=""><b>MesHeures</b><span>Suivre aujourd’hui · anticiper demain</span></div>
 <header>
-<h1><img src="./icon.svg" class="mh-header-logo" alt="" width="24" height="24"> MesHeures <span id="mhVersion" class="mut" style="font-size:9px;font-weight:500">V16.1</span> <span id="hBadge" style="display:none" class="badge">!</span></h1>
+<h1><img src="./icon.svg" class="mh-header-logo" alt="" width="24" height="24"> MesHeures <span id="mhVersion" class="mut" style="font-size:9px;font-weight:500">V17.0</span> <span id="hBadge" style="display:none" class="badge">!</span></h1>
 <div class="tabs">
 <button id="t-home" onclick="tab('home')">Accueil</button>
 <button id="t-jour" class="on" onclick="tab('jour')">Jour</button>
@@ -341,7 +351,7 @@ tr.t{background:#1c2128}tr.t td{font-weight:700}
 <button class="r" onclick="wipe()">🗑 Effacer tout</button>
 </div>
 </div>
-<div class="card plugin-manager"><div class="section-head"><h2>🧩 Extensions</h2><span class="period-pill">V16</span></div>
+<div class="card plugin-manager"><div class="section-head"><h2>🧩 Extensions</h2><span class="period-pill">V17</span></div>
 <div class="al i">Ajoute des modules à MesHeures sans toucher au cœur de l’application. Les extensions importées sont isolées dans un cadre sécurisé et n’accèdent qu’aux données explicitement autorisées.</div>
 <div class="row" style="margin-bottom:10px"><button onclick="$('mhPluginFile').click()">➕ Installer .mhplugin</button><input id="mhPluginFile" type="file" accept=".mhplugin,application/json" onchange="mhImportPlugin(this)" style="display:none"></div>
 <div id="mhPluginList"></div>
@@ -388,7 +398,10 @@ tr.t{background:#1c2128}tr.t td{font-weight:700}
 <script defer src="./scripts/app-plugins.js"></script>
 <script defer src="./scripts/app.js"></script>
 <script defer src="./scripts/pay-fix-v16.2.js"></script>
-<script defer src="./scripts/legal-v16.2.4.js"></script>
-<script>window.addEventListener('load',()=>setTimeout(()=>document.getElementById('mhSplash')?.classList.add('off'),180))</script>
+<script defer src="./scripts/app-projection.js"></script>
+<script defer src="./scripts/app-legal.js"></script>
+<script defer src="./scripts/app-backup.js"></script>
+<script defer src="./scripts/app-v17.js"></script>
+<script>(function(){var hide=function(){var s=document.getElementById('mhSplash');if(s)s.classList.add('off')};setTimeout(hide,300);setTimeout(hide,1000);})();</script>
 </body>
 </html>
