@@ -283,13 +283,33 @@
     window.renderPay = wrapped;
   }
 
+  // Le panel et syncVersion() réécrivent le DOM (innerHTML / nodeValue).
+  // Le MutationObserver ci-dessous observe justement ce DOM : sans garde,
+  // chaque réécriture redéclenche l'observer, qui réécrit à nouveau, etc.
+  // → boucle infinie qui sature le thread JS et fige l'app après quelques
+  // secondes. mhSafeRun coupe l'observation pendant qu'on écrit.
+  let mhObserverBusy = false;
+  function mhSafeRun(fn) {
+    if (mhObserverBusy) return;
+    mhObserverBusy = true;
+    try {
+      observer.disconnect();
+      fn();
+    } finally {
+      observer.observe(document.documentElement, {childList:true, subtree:true});
+      mhObserverBusy = false;
+    }
+  }
+
   function boot() {
     ensurePeriod();
     wrapRenderPay();
     bindInput();
-    updatePeriodLabel();
-    renderProPanel();
-    syncVersion();
+    mhSafeRun(() => {
+      updatePeriodLabel();
+      renderProPanel();
+      syncVersion();
+    });
   }
 
   window.addEventListener('load', boot);
@@ -298,25 +318,21 @@
     wrapRenderPay();
     bindInput();
     if (document.getElementById('pN')) {
-      updatePeriodLabel();
-      renderProPanel();
-      syncVersion();
+      mhSafeRun(() => {
+        updatePeriodLabel();
+        renderProPanel();
+        syncVersion();
+      });
     }
   });
   observer.observe(document.documentElement, {childList:true, subtree:true});
 
-  const timer = setInterval(() => {
-    wrapRenderPay();
-    bindInput();
-    if (document.getElementById('pN')) {
-      updatePeriodLabel();
-      renderProPanel();
-      syncVersion();
-    }
-  }, 1200);
+  // L'ancien setInterval(...,1200) refaisait ce même travail toutes les
+  // 1,2 s en continu, ce qui aggravait la boucle ci-dessus. Le
+  // MutationObserver + wrapRenderPay() suffisent à garder le panel à jour ;
+  // il est retiré.
 
   window.addEventListener('beforeunload', () => {
-    clearInterval(timer);
     observer.disconnect();
   });
 })();
