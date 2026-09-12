@@ -1,6 +1,6 @@
 /* MesHeures V18 — interface, projection, conformité et migrations */
 (function(){
-  const V='18.0.9';
+  const V='18.0.10';
   function migrate(){
     DB.s=DB.s||{};
     if(DB.s.taux===14.02)DB.s.taux=14.20;
@@ -57,7 +57,7 @@
   function patchRender(){
     if(window.__mhV17Render)return;window.__mhV17Render=true;const old=window.renderAll;window.renderAll=function(){old();addReg();legalCard();injectHome();renderProjection();};
   }
-  function boot(){migrate();theme(DB.s.theme);if(document.getElementById('mhVersion'))document.getElementById('mhVersion').textContent='V18.0.9';buildNav();patchHome();patchRender();addReg();legalCard();injectHome();setTimeout(()=>{try{renderAll()}catch(e){console.error(e)}},0);}
+  function boot(){migrate();theme(DB.s.theme);if(document.getElementById('mhVersion'))document.getElementById('mhVersion').textContent='V18.0.10';buildNav();patchHome();patchRender();addReg();legalCard();injectHome();setTimeout(()=>{try{renderAll()}catch(e){console.error(e)}},0);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>{if(DB.s.theme==='auto')theme('auto')});
 })();

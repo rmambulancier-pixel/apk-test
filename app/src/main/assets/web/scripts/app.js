@@ -595,7 +595,36 @@ function renderPay(){
   if(proBrut)proBrut.textContent=EUR(tot);
   if(proNet)proNet.textContent=EUR(tot*DB.s.net);
   if(proHours)proHours.textContent=F(G.h25+G.h50);
-  if(gap)gap.textContent=B.rcAcq==null?'À renseigner':B.rcAcq.toFixed(2)+' h RC';
+
+  // V18.0.10 : le champ « Écart bulletin » ne doit plus confondre
+  // l'absence de saisie RC de la quatorzaine avec l'absence de bulletin.
+  // Les bulletins sont mensuels et une quatorzaine peut chevaucher deux mois.
+  // On recherche donc les bulletins dont le mois intersecte réellement la période.
+  if(gap){
+    const periodEnd=addD(st,nb*14-1);
+    const monthsInPeriod=new Set();
+    let cursor=st;
+    while(cursor<=periodEnd){
+      monthsInPeriod.add(cursor.slice(0,7));
+      cursor=addD(cursor,1);
+    }
+    const matches=(DB.bulletins||[]).filter(b=>b&&/^\d{4}-\d{2}$/.test(String(b.mois||''))&&monthsInPeriod.has(b.mois));
+    if(matches.length){
+      const labels=matches.map(b=>{
+        const bits=[String(b.mois)];
+        if(Number.isFinite(Number(b.brut)))bits.push('brut '+EUR(b.brut));
+        if(Number.isFinite(Number(b.net)))bits.push('net '+EUR(b.net));
+        return bits.join(' · ');
+      });
+      gap.textContent=labels.join(' | ');
+      gap.title='Bulletin(s) mensuel(s) trouvé(s) pour le mois couvert par cette période. Le rapprochement exact se fait dans Bulletin / Rapprochement.';
+      gap.style.fontSize=matches.length>1?'0.78em':'0.86em';
+    }else{
+      gap.textContent='Aucun bulletin pour cette période';
+      gap.title='Aucun bulletin mensuel importé ne correspond aux mois couverts par cette quatorzaine.';
+      gap.style.fontSize='0.86em';
+    }
+  }
 }
 
 function renderAudit(){
