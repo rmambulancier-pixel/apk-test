@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d1117">
-<title>MesHeures V17.0</title>
-<meta name="application-version" content="17.0.1">
+<title>MesHeures V18.0.1</title>
+<meta name="application-version" content="18.0.1">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./style/refonte.css?v=17.0.1">
+<link rel="stylesheet" href="./style/refonte.css?v=18.0.1">
 <script async src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -122,11 +122,14 @@ tr.t{background:#1c2128}tr.t td{font-weight:700}
 :root[data-theme="light"]{--bg:#f5f7f9;--card:#fff;--line:#d0d7de;--txt:#1f2328;--dim:#57606a;--ok:#1a7f37;--warn:#9a6700;--bad:#cf222e;--blue:#0969da;--pur:#8250df;--ora:#bc4c00} :root[data-theme="light"] body{background:var(--bg)}
 @media(max-width:700px){body{padding-bottom:76px}.tabs{display:none}.mh-v17-nav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:80;background:#0d1117f2;border-top:1px solid var(--line);backdrop-filter:blur(12px);padding:7px 6px calc(7px + env(safe-area-inset-bottom));gap:5px}.mh-v17-nav button{flex:1;background:transparent;color:var(--dim);border:0;padding:6px 2px;font-size:18px;line-height:1}.mh-v17-nav button span{display:block;font-size:9px;margin-top:3px;font-weight:700}.mh-v17-nav button:active,.mh-v17-nav button:hover{color:#fff}.mh-v17-proj-grid{grid-template-columns:1fr 1fr 1fr}.mh-v17-tools{grid-template-columns:1fr 1fr}}
 @media(min-width:701px){.mh-v17-nav{display:flex;position:fixed;right:18px;bottom:18px;z-index:80;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;gap:4px}.mh-v17-nav button{background:#21262d}.mh-v17-nav button span{font-size:10px;margin-left:4px}}
+
+.mh-v18-intel{margin:10px 0}.mh-v18-intel .mh-v18-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mh-v18-intel .mh-v18-kpis>div{background:#0d1117;border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center}.mh-v18-intel .mh-v18-kpis b{display:block;font-size:18px}.mh-v18-intel .mh-v18-kpis span{display:block;color:var(--dim);font-size:9px;margin-top:3px}.mh-v18-intel .mh-v18-kpis b.ok{color:var(--ok)}.mh-v18-intel .mh-v18-kpis b.warn{color:var(--warn)}.mh-v18-intel .mh-v18-kpis b.bad{color:var(--bad)}.mh-v18-intel-bar{height:7px;background:#202832;border-radius:999px;overflow:hidden;margin:10px 0 7px}.mh-v18-intel-bar i{display:block;height:100%;background:linear-gradient(90deg,#36b865,#e3b84c,#f85149)}.mh-v18-intel-note{font-size:10px;color:var(--dim);margin-bottom:9px}.mh-v18-intel details{border-top:1px solid var(--line);padding-top:9px}.mh-v18-intel details summary{font-size:12px;font-weight:700;cursor:pointer}.mh-v18-intel .al small{display:block;color:var(--dim);margin-top:4px}.mh-v18-intel .audit-empty{margin-top:8px}
+@media(max-width:600px){.mh-v18-intel .mh-v18-kpis{grid-template-columns:1fr 1fr}.mh-v18-intel .mh-v18-kpis>div:last-child{grid-column:1/-1}}
 </style>
 </head>
 <body><div id="mhSplash"><img src="./icon.svg" alt=""><b>MesHeures</b><span>Suivre aujourd’hui · anticiper demain</span></div>
 <header>
-<h1><img src="./icon.svg" class="mh-header-logo" alt="" width="24" height="24"> MesHeures <span id="mhVersion" class="mut" style="font-size:9px;font-weight:500">V17.0</span> <span id="hBadge" style="display:none" class="badge">!</span></h1>
+<h1><img src="./icon.svg" class="mh-header-logo" alt="" width="24" height="24"> MesHeures <span id="mhVersion" class="mut" style="font-size:9px;font-weight:500">V18.0.1</span> <span id="hBadge" style="display:none" class="badge">!</span></h1>
 <div class="tabs">
 <button id="t-home" onclick="tab('home')">Accueil</button>
 <button id="t-jour" class="on" onclick="tab('jour')">Jour</button>
@@ -402,6 +405,7 @@ tr.t{background:#1c2128}tr.t td{font-weight:700}
 <script defer src="./scripts/app-legal.js"></script>
 <script defer src="./scripts/app-backup.js"></script>
 <script defer src="./scripts/app-v17.js"></script>
+<script defer src="./scripts/app-intelligence.js"></script>
 <script defer src="./scripts/app-evidence.js"></script>
 <script>(function(){var hide=function(){var s=document.getElementById('mhSplash');if(s)s.classList.add('off')};setTimeout(hide,300);setTimeout(hide,1000);})();</script>
 </body>

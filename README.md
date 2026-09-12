@@ -1,12 +1,12 @@
-# MesHeures V17.0.1 — Android + PWA
+# MesHeures V18.0.1 — Android + PWA
 
 MesHeures est une application de suivi du temps de travail conçue pour le **transport sanitaire**, avec un focus sur le suivi des ambulanciers : saisie terrain, décompte par quatorzaine, projection, contrôle des amplitudes et du temps de travail, suivi de la paie, import de documents et sauvegardes locales.
 
-> **Version actuelle : V17.0.1 — versionCode Android 1701**
+> **Version actuelle : V18.0.1 — versionCode Android 1801**
 >
-> La V17 part de la base Android réparée et validée, puis regroupe les évolutions paie, projection, contrôle légal et sauvegarde.
+> La V18 part de la base V17.0.1 validée et ajoute une couche d’intelligence locale : preuves, patterns récurrents, projection 12 semaines et alertes prédictives.
 
-## Fonctionnalités V17
+## Fonctionnalités V18
 
 ### 🏠 Tableau de bord
 - TTE du jour
@@ -97,6 +97,30 @@ Les règles sont utilisées comme aide au contrôle et à la détection d'écart
 
 **Date de vérification du référentiel intégré dans cette version : 11/09/2026.**
 
+## Intelligence locale — V18.0.1
+
+### 🧠 Détection de motifs
+- recherche de récurrences sur l’historique des journées travaillées
+- dimanches travaillés à périodicité proche de 14 jours
+- contrôle indicatif des RC saisis après les dimanches travaillés
+- répétition des amplitudes > 12 h
+- répétition des TTE > 10 h
+- répétition des journées sans pause détectée
+- aucun machine learning : règles statistiques simples et auditables
+
+### 📈 Projection 46 h / 12 semaines
+- fenêtre glissante de 12 semaines
+- séparation entre historique réel et journées futures planifiées
+- estimation des futures journées travaillées uniquement lorsqu’un planning les identifie
+- journées futures inconnues jamais transformées en heures fictives
+- détection de la première date de risque lorsque la trajectoire connue dépasse 46 h de moyenne
+
+### 🚨 Alertes prédictives
+- alerte locale de trajectoire
+- mémorisation du franchissement pour éviter les notifications répétitives
+- notification système si les permissions de l’appareil l’autorisent
+- l’alerte reste visible dans l’application si les notifications système ne sont pas disponibles
+
 ## Architecture
 
 ```text
@@ -130,8 +154,8 @@ app/src/main/
 - Java : 17
 - Gradle : 8.9
 - Android Gradle Plugin : 8.7.3
-- versionCode : 1701
-- versionName : 17.0.1
+- versionCode : 1801
+- versionName : 18.0.1
 
 La signature de release repose sur la clé persistante configurée dans les secrets GitHub Actions. **Le keystore privé n'est pas stocké dans le dépôt.**
 
@@ -162,6 +186,10 @@ Une désinstallation n'est pas nécessaire pour une mise à jour signée compati
 Avant une évolution importante ou un changement de build, il est recommandé d'effectuer un **export JSON complet** depuis MesHeures. Le fichier JSON constitue une sauvegarde portable des données de l'application.
 
 ## Historique rapide
+
+### V18.0.1
+- intelligence locale : motifs récurrents, projection 46 h/12 semaines et alertes prédictives
+- version Android/PWA/cache synchronisée en 18.0.1
 
 ### V17.0.1
 - nettoyage dupliqué des exports JSON : un seul moteur V17 fait foi
