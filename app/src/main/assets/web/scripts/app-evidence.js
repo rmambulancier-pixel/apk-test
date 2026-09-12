@@ -1,0 +1,108 @@
+/* MesHeures V18 — Lot 1 : constats, journal de preuves, chronologie, backup chiffré */
+(function(){
+  const V='18.0.0-lot1';
+  const NS='mhV18';
+  function init(){
+    DB.constats=Array.isArray(DB.constats)?DB.constats:[];
+    DB.events=Array.isArray(DB.events)?DB.events:[];
+  }
+  function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return ('00000000'+(h>>>0).toString(16)).slice(-8)}
+  function article(rule){
+    const R=MH_LEGAL?.rules||{};
+    if(rule==='L3121-16')return R.pause20;
+    if(rule.includes('art. 3'))return R.ampMax||R.ampNormal;
+    if(rule.includes('art. 4'))return R.tteDaily;
+    return {source:rule,url:''};
+  }
+  function estimate(a){
+    const k=String(a.k||''); const r=/^\d{4}-\d{2}-\d{2}$/.test(k)?cd(k):null;
+    const G={amp:0,tte:0,seuil:0,trav:0,idaj:0,ir:0,iru:0,rc:0,fer:0,dim:0,nuit:0,nor:0,h25:0,h50:0,hab:0,ferJ:[],dimJ:[]};
+    let mins=0, basis='';
+    if(a.rule==='L3121-16'){mins=20;basis='20 min de pause à contrôler';}
+    else if(r&&r.amp>12){mins=Math.max(0,Math.round(r.amp-12*60));basis='minutes au-delà de 12 h d’amplitude';}
+    else if(r&&r.tte>600){mins=Math.max(0,Math.round(r.tte-600));basis='minutes au-delà de 10 h de TTE';}
+    else if(String(a.rule).includes('48 h')){const m=Number(String(a.m||'').match(/(\d+)h(\d+)/)?.[1]||0)*60+Number(String(a.m||'').match(/(\d+)h(\d+)/)?.[2]||0);mins=Math.max(0,m-2880);basis='minutes au-delà de 48 h';}
+    else if(String(a.rule).includes('46 h')){mins=0;basis='moyenne glissante : chiffrage automatique non retenu';}
+    if(mins>0){G.nor=mins;const b=brutOf(G);return {minutes:mins,montant:Number((b.tot||0).toFixed(2)),basis};}
+    return {minutes:0,montant:0,basis};
+  }
+  function createFromAudit(){
+    init(); const start=DB.s?.emb||DB.per?.start||today(); const finish=today(); let added=0;
+    // Parcourt tout l'historique par blocs de 14 jours afin que les constats ne soient
+    // pas limités à la quatorzaine actuellement affichée.
+    let q=start, guard=0;
+    while(q<=finish && guard++<1000){
+      const nb=1, alerts=window.mhLegalAudit?.(q,nb)||[];
+      alerts.forEach(a=>{
+      const source=article(a.rule||'');
+      const sig=[a.k,a.rule,a.m].join('|');
+      const id='C18-'+hash(sig);
+      if(DB.constats.some(c=>c.id===id))return;
+      const est=estimate(a);
+      DB.constats.push({id,date_constat:new Date().toISOString(),jour_concerne:a.k,regle_violie:a.m,article_source:source?.source||a.rule||'',source_url:source?.url||'',calcul_brut:est.minutes,calcul_montant_du:est.montant,calcul_base:est.basis,niveau:a.lvl==='b'?'critique':a.lvl==='w'?'a_verifier':'info',message:a.m});
+      added++;
+      });
+      q=addD(q,14);
+    }
+    if(added)save(); return added;
+  }
+  function addEvent(date,type,text){
+    init(); if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!text.trim())return false;
+    DB.events.push({id:'E18-'+Date.now()+'-'+hash(date+type+text),date,type,text,createdAt:new Date().toISOString()});
+    DB.events.sort((a,b)=>a.date.localeCompare(b.date));save();return true;
+  }
+  function monthEvidence(){
+    init(); const by={}; const start=DB.s?.emb||today(), end=today();
+    // Historique calculé à partir des quatorzaines successives, en conservant les résultats de calcPer.
+    let qStart=start, guard=0;
+    while(qStart<=end && guard++<1000){
+      const qEnd=addD(qStart,13), stop=qEnd<end?qEnd:end;
+      const {G}=calcPer(qStart,1); const key=qStart.slice(0,7);
+      by[key]=by[key]||{calcMin:0,nor:0,h25:0,h50:0,periods:0};
+      // Pour éviter de surcompter une quatorzaine partielle, on ne crédite que les jours réellement dans l'historique.
+      let frac=14; if(qStart<start)frac=14;
+      if(qEnd>end)frac=nDays(qStart,end)+1;
+      const ratio=frac/14;
+      by[key].calcMin+=G.tte*ratio;by[key].nor+=G.nor*ratio;by[key].h25+=G.h25*ratio;by[key].h50+=G.h50*ratio;by[key].periods++;
+      qStart=addD(qStart,14);
+    }
+    (DB.bulletins||[]).forEach(b=>{
+      const key=b.mois;if(!key)return; const x=by[key]||{calcMin:0,nor:0,h25:0,h50:0,periods:0};
+      const paidH25=Number(b.hs25H)||0,paidH50=Number(b.hs50H)||0,paidNorm=Number(b.hNorm)||0;
+      const paidMin=(paidNorm+paidH25+paidH50)*60;
+      const calcPay=brutOf({nor:Math.round(x.nor),h25:Math.round(x.h25),h50:Math.round(x.h50),amp:0,tte:Math.round(x.calcMin),seuil:Math.round(x.calcMin),trav:0,idaj:0,ir:0,iru:0,rc:0,fer:0,dim:0,nuit:0,hab:0,ferJ:[],dimJ:[]});
+      x.paidMin=paidMin;x.ecartMin=Math.round(x.calcMin-paidMin);x.paidGross=Number(b.brut)||0;x.calcGross=Number((calcPay.tot||0).toFixed(2));x.ecartEur=Number((x.calcGross-x.paidGross).toFixed(2));x.bulletin=b;
+      by[key]=x;
+    });
+    return Object.entries(by).sort((a,b)=>a[0].localeCompare(b[0])).map(([mo,x])=>({mois:mo,...x}));
+  }
+  function renderEvidence(){
+    createFromAudit(); init();
+    const host=document.getElementById('mhV18Evidence');if(!host)return;
+    const rows=monthEvidence();
+    const constats=[...DB.constats].sort((a,b)=>b.date_constat.localeCompare(a.date_constat));
+    const events=[...DB.events].sort((a,b)=>b.date.localeCompare(a.date));
+    const total=constats.reduce((s,c)=>s+(Number(c.calcul_montant_du)||0),0);
+    host.innerHTML=`<div class="card mh-v18-card"><h2>🛡️ Dossier & preuves V18</h2><div class="mh-v18-kpis"><div><b>${constats.length}</b><span>constat(s)</span></div><div><b>${EUR(total)}</b><span>estimation chiffrée</span></div><div><b>${events.length}</b><span>événement(s)</span></div></div><div class="row"><button onclick="mhV18ConstatsPDF()">📄 Export constats</button><button class="g" onclick="mhV18AddEvent()">＋ Événement</button><button class="g" onclick="mhV18EncryptedBackup()">🔐 Backup chiffré</button><button class="g" onclick="document.getElementById('mhV18Restore').click()">🔓 Restaurer chiffré</button><input id="mhV18Restore" type="file" accept=".json,.mhbackup" style="display:none" onchange="mhV18EncryptedRestore(this)"></div><details open><summary>📚 Journal de preuves cumulatif</summary><div class="mh-v18-table">${rows.length?rows.map(x=>`<div class="mh-v18-row"><b>${x.mois}</b><span>Calcul ${F(x.calcMin)}</span><span>Payé ${F(x.paidMin||0)}</span><strong class="${(x.ecartMin||0)>0?'bad':'ok'}">Écart ${F(x.ecartMin||0)}</strong><span>${x.bulletin?`💶 ${EUR(x.ecartEur)}`:'—'}</span></div>`).join(''):'<div class="mut">Aucun bulletin exploitable sur l’historique.</div>'}</div></details><details><summary>🛡️ Constats persistants</summary><div>${constats.length?constats.map(c=>`<div class="mh-v18-proof"><b>${esc(c.id)}</b> · ${esc(c.jour_concerne)} · ${esc(c.regle_violie)}<small>Créé le ${new Date(c.date_constat).toLocaleString('fr-FR')} · ${esc(c.article_source)}${c.calcul_montant_du?` · ${EUR(c.calcul_montant_du)} estimés`:''}</small></div>`).join(''):'<div class="mut">Aucun constat.</div>'}</div></details><details><summary>🕰️ Frise chronologique</summary><div class="mh-v18-timeline">${[...constats.map(c=>({date:c.jour_concerne,type:'Constat',text:c.regle_violie})),...(DB.bulletins||[]).map(b=>({date:b.mois+'-01',type:'Bulletin',text:'Bulletin importé'})),...events.map(e=>({date:e.date,type:e.type,text:e.text}))].sort((a,b)=>b.date.localeCompare(a.date)).map(e=>`<div><time>${esc(e.date)}</time><b>${esc(e.type)}</b><span>${esc(e.text)}</span></div>`).join('')||'<div class="mut">Aucun événement.</div>'}</div></details></div>`;
+  }
+  window.mhV18AddEvent=function(){const date=prompt('Date (AAAA-MM-JJ) :',today());if(!date)return;const type=prompt('Type :','Courrier');if(!type)return;const text=prompt('Description :','');if(!text)return;if(addEvent(date,type,text)){renderEvidence();alert('✅ Événement ajouté.')}};
+  window.mhV18ConstatsPDF=function(){
+    init();createFromAudit();const list=[...DB.constats].sort((a,b)=>a.date_constat.localeCompare(b.date_constat));
+    const w=window.open('','_blank');if(!w)return alert('Autorise les fenêtres contextuelles pour exporter le PDF.');
+    const generated=new Date().toISOString();w.document.write(`<html><head><title>MesHeures — Constats</title><style>body{font-family:Arial,sans-serif;margin:28px;color:#111}h1{font-size:22px}.c{border:1px solid #bbb;padding:12px;margin:12px 0;break-inside:avoid}.m{color:#555;font-size:12px}footer{margin-top:20px;font-size:11px;color:#555}</style></head><body><h1>MesHeures — Dossier de constats</h1><p>Généré le ${generated}</p>${list.map(c=>`<div class="c"><b>${esc(c.id)}</b><p>${esc(c.regle_violie)}</p><p>Journée concernée : ${esc(c.jour_concerne)}</p><p>Source : ${esc(c.article_source)}</p><p>Minutes calculées : ${esc(c.calcul_brut)} · Montant estimé : ${EUR(c.calcul_montant_du)}</p><p class="m">Constat créé le : ${esc(c.date_constat)}</p></div>`).join('')}<footer>MesHeures V18 · document généré à la demande de l’utilisateur · les montants sont des estimations calculées par l’application et doivent être vérifiés.</footer></body></html>`);w.document.close();setTimeout(()=>w.print(),400);
+  };
+  async function deriveKey(password,salt){const enc=new TextEncoder();const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+  function b64bytes(s){const bin=atob(s);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+  window.mhV18EncryptedRestore=async function(input){
+    const f=input?.files?.[0];if(!f)return; const p=prompt('Mot de passe de la sauvegarde chiffrée :');if(!p)return;
+    try{const obj=JSON.parse(await f.text());if(obj.format!=='MesHeures Encrypted Backup')throw new Error('Format de sauvegarde chiffrée non reconnu.');const salt=b64bytes(obj.salt),iv=b64bytes(obj.iv),key=await deriveKey(p,salt);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,b64bytes(obj.ciphertext));const payload=JSON.parse(new TextDecoder().decode(plain));if(!payload?.data?.days)throw new Error('Structure MesHeures invalide.');mhV17Backup?.('before-encrypted-restore');if(!confirm('Restaurer cette sauvegarde chiffrée ? Une sauvegarde locale de sécurité vient d’être créée.'))return;DB={...DB,...payload.data,s:{...DEF,...(payload.data.s||{})},per:{...DB.per,...(payload.data.per||{})}};save();renderAll();alert('✅ Sauvegarde chiffrée restaurée.');}catch(e){alert('❌ Restauration impossible : mot de passe incorrect ou fichier invalide.');console.warn(e)}finally{input.value=''}
+  };
+  window.mhV18EncryptedBackup=async function(){
+    const p=prompt('Mot de passe pour chiffrer la sauvegarde :');if(!p)return;const p2=prompt('Confirme le mot de passe :');if(p!==p2)return alert('❌ Les mots de passe ne correspondent pas.');
+    try{init();const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await deriveKey(p,salt);const payload={format:'MesHeures Encrypted Backup',version:V,createdAt:new Date().toISOString(),data:DB};const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(payload)));const obj={format:payload.format,version:V,createdAt:payload.createdAt,kdf:'PBKDF2-SHA256',iterations:150000,cipher:'AES-256-GCM',salt:btoa(String.fromCharCode(...salt)),iv:btoa(String.fromCharCode(...iv)),ciphertext:btoa(String.fromCharCode(...new Uint8Array(ct)))};const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='MesHeures-backup-chiffre-'+today()+'.mhbackup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);alert('✅ Sauvegarde chiffrée exportée.');}catch(e){alert('❌ Chiffrement impossible : '+e.message)}
+  };
+  window.mhV18RenderEvidence=renderEvidence;
+  function inject(){init();if(document.getElementById('mhV18Evidence'))return;const host=document.createElement('section');host.id='mhV18Evidence';const target=document.getElementById('s-audit')||document.body;target.appendChild(host);renderEvidence();}
+  const oldRenderAll=window.renderAll; if(oldRenderAll&&!window.__mhV18EvidencePatch){window.__mhV18EvidencePatch=true;window.renderAll=function(){oldRenderAll();inject();renderEvidence()}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',inject,{once:true});else setTimeout(inject,0);
+})();
