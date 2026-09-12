@@ -14,6 +14,8 @@ function doUndo(){
 function closeModal(id){$('undoModal').classList.remove('on')}
 
 function tab(t){
+  if(t==='jour' && !curDate){curDate=today();curMonth=curDate.slice(0,7)}
+  if(t==='mois' && !curMonth){curMonth=today().slice(0,7);curDate=today()}
   curTab=t;
   ['home','jour','mois','paie','audit','bul','romi','reg'].forEach(x=>{
     const sec=$('s-'+x),btn=$('t-'+x);
@@ -407,6 +409,15 @@ function renderAll(){
   if(tot>0){badge.style.display='';badge.textContent=tot}else badge.style.display='none';
   $('t-audit')?.querySelector('.tb')?.remove();
   if(tot>0){const auditTab=$('t-audit');if(auditTab){const sp=document.createElement('span');sp.className='tb';sp.textContent=tot;auditTab.appendChild(sp)}}
+}
+
+function wipe(){
+  if(!confirm('⚠️ Effacer toutes les données locales MesHeures ?\n\nCette action supprime les journées, bulletins, relevés, constats et réglages enregistrés sur cet appareil.'))return;
+  try{localStorage.removeItem(LS)}catch(e){}
+  DB={s:{...DEF},days:{},cmp:{},periods:[],bul:{},bulletins:[],romi:{},per:{start:DEF.anchor,nb:1},exp:null};
+  curDate=today();curMonth=curDate.slice(0,7);curTab='home';_undo=null;
+  save();tab('home');
+  alert('✅ Données locales effacées.');
 }
 
 function copySum(){

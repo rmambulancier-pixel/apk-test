@@ -1,7 +1,7 @@
-/* MesHeures V18.0.6 — Lot 3 : dossier complet, empreinte d'intégrité et export probatoire */
+/* MesHeures V18.0.8 — Lot 3 : dossier complet, empreinte d'intégrité et export probatoire */
 (function(){
   'use strict';
-  const VERSION='18.0.6';
+  const VERSION='18.0.8';
   const esc0=window.esc||((s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
   const euro=window.EUR||((n)=>Number(n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'}));
   const fmt=window.F||((n)=>{const m=Number(n||0);return Math.floor(m/60)+'h'+String(Math.round(m%60)).padStart(2,'0')});
@@ -15,15 +15,18 @@
   function months(){return window.mhV18IntelligenceData?null:null}
   function snapshot(){
     const data=safeClone();
-    const days=Object.values(data.days||{}).filter(Boolean).sort((a,b)=>String(a.k||'').localeCompare(String(b.k||'')));
+    const days=Object.entries(data.days||{}).filter(([,d])=>d&&typeof d==='object').map(([k,d])=>{
+      const r=window.mhCalcDay?window.mhCalcDay(k):{};
+      return {...d,k,computed:{amp:Number(r.amp)||0,tte:Number(r.tte)||0,pauseMinutes:Number(r.pz)||0,worked:Number(r.trav)||0,alerts:Array.isArray(r.al)?r.al.map(a=>({...a})):[]}};
+    }).sort((a,b)=>String(a.k).localeCompare(String(b.k)));
     const bulletins=Array.isArray(data.bulletins)?data.bulletins:[];
     const constats=Array.isArray(data.constats)?data.constats:[];
     const events=Array.isArray(data.events)?data.events:[];
     const intel=window.mhV18IntelligenceData?.()||{};
     const audit=window.mhLegalAudit?(window.mhLegalAudit(data.s?.emb||data.per?.start||today(),1)||[]):[];
-    const worked=days.filter(d=>Number(d.tte||0)>0);
-    const totalTte=worked.reduce((s,d)=>s+Number(d.tte||0),0);
-    const anomalies=worked.reduce((s,d)=>s+(Array.isArray(d.al)?d.al.length:0),0);
+    const worked=days.filter(d=>Number(d.computed?.tte||0)>0);
+    const totalTte=worked.reduce((s,d)=>s+Number(d.computed?.tte||0),0);
+    const anomalies=worked.reduce((s,d)=>s+(Array.isArray(d.computed?.alerts)?d.computed.alerts.length:0),0);
     return {
       meta:{application:'MesHeures',version:VERSION,generatedAt:new Date().toISOString(),periodStart:data.s?.emb||data.per?.start||'',periodEnd:today()},
       identity:{nom:data.s?.nom||'',emb:data.s?.emb||'',taux:Number(data.s?.taux||0),base:Number(data.s?.base||0)},
@@ -34,7 +37,7 @@
   }
   function compact(s){return JSON.stringify(s)}
   function download(name,text,type){const blob=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-  function rowsDays(days){return days.map(d=>`<tr><td>${esc0(d.k||'')}</td><td>${fmt(d.tte||0)}</td><td>${fmt(d.amp||0)}</td><td>${fmt(d.pauses||0)}</td><td>${Array.isArray(d.al)?esc0(d.al.join(' · ')):'—'}</td></tr>`).join('')}
+  function rowsDays(days){return days.map(d=>`<tr><td>${esc0(d.k||'')}</td><td>${fmt(d.computed?.tte||0)}</td><td>${fmt(d.computed?.amp||0)}</td><td>${fmt(d.computed?.pauseMinutes||0)}</td><td>${Array.isArray(d.computed?.alerts)&&d.computed.alerts.length?esc0(d.computed.alerts.map(a=>a.m||'').join(' · ')):'—'}</td></tr>`).join('')}
   function rowsConstats(cs){return cs.map(c=>`<tr><td>${esc0(c.id)}</td><td>${esc0(c.jour_concerne)}</td><td>${esc0(c.regle_violie)}</td><td>${esc0(c.article_source)}</td><td>${euro(c.calcul_montant_du||0)}</td></tr>`).join('')}
   function reportHtml(s,hash,title,recipient){
     const p=s.meta.periodStart&&s.meta.periodEnd?`${esc0(s.meta.periodStart)} → ${esc0(s.meta.periodEnd)}`:'Historique disponible';
@@ -71,7 +74,7 @@
   }
   function render(){
     const target=document.getElementById('s-audit')||document.body;if(document.getElementById('mhV18Dossier'))return;
-    const sec=document.createElement('section');sec.id='mhV18Dossier';sec.innerHTML=`<div class="card mh-v18-card"><h2>📁 Dossier complet V18.0.6</h2><p class="mut">Regroupe l'historique, les constats, les événements, les bulletins et l'intelligence locale dans un export unique.</p><div class="row"><button onclick="mhV18ExportDossier()">⬇️ Export dossier JSON</button><button class="g" onclick="mhV18PrintDossier()">🖨️ Dossier imprimable / PDF</button></div><div id="mhV18DossierHash" class="mut" style="margin-top:8px"></div></div>`;target.appendChild(sec);refreshHash();
+    const sec=document.createElement('section');sec.id='mhV18Dossier';sec.innerHTML=`<div class="card mh-v18-card"><h2>📁 Dossier complet V18.0.8</h2><p class="mut">Regroupe l'historique, les constats, les événements, les bulletins et l'intelligence locale dans un export unique.</p><div class="row"><button onclick="mhV18ExportDossier()">⬇️ Export dossier JSON</button><button class="g" onclick="mhV18PrintDossier()">🖨️ Dossier imprimable / PDF</button></div><div id="mhV18DossierHash" class="mut" style="margin-top:8px"></div></div>`;target.appendChild(sec);refreshHash();
   }
   async function refreshHash(){try{const h=await digestText(compact(snapshot()));const el=document.getElementById('mhV18DossierHash');if(el)el.textContent='Empreinte actuelle SHA-256 : '+h}catch(e){}}
   window.mhV18ExportDossier=()=>makeDossier(false);

@@ -18,5 +18,6 @@
       "type": "image/svg+xml"
     }
   ],
-  "description": "Suivi professionnel des heures, paie, audit et extensions pour ambulanciers"
+  "description": "Suivi professionnel des heures, paie, audit et extensions pour ambulanciers",
+  "version": "18.0.8"
 }

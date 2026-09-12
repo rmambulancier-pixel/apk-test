@@ -1,8 +1,18 @@
-/* MesHeures V18.0.1 — Lot 2 : intelligence locale, patterns, projection 12 semaines, alertes */
+/* MesHeures V18.0.8 — intelligence locale : intelligence locale, patterns, projection 12 semaines, alertes */
 (function(){
-  const V='18.0.6';
+  const V='18.0.8';
   const LEGAL_WEEK=46*60;
   const WORK=['T','NUIT'];
+  let calcCache=new Map(), calcSig='';
+  function signature(){
+    const d=DB.days||{}; const keys=Object.keys(d).sort();
+    return keys.length+'|'+(keys.length?keys[0]+'|'+keys[keys.length-1]:'')+'|'+keys.reduce((n,k)=>n+(JSON.stringify(d[k]).length||0),0);
+  }
+  function minutesCached(k){
+    const sig=signature(); if(sig!==calcSig){calcSig=sig;calcCache.clear();}
+    if(calcCache.has(k))return calcCache.get(k);
+    const m=minutesOf(k); calcCache.set(k,m); return m;
+  }
   const isWork=k=>WORK.includes(DB.days?.[k]?.t);
   const minutesOf=k=>{const r=cd(k);return Math.max(0,Number(r.tte)||0)};
   const listDays=(a,b)=>{const out=[];for(let k=a;k<=b;k=addD(k,1))out.push(k);return out};
@@ -19,7 +29,7 @@
     const vals=[];
     for(let i=1;i<=56;i++){
       const k=addD(end,-i);if(!isWork(k))continue;
-      const m=minutesOf(k);if(m>0)vals.push(m);
+      const m=minutesCached(k);if(m>0)vals.push(m);
     }
     if(!vals.length)return 0;
     vals.sort((a,b)=>a-b);
@@ -44,11 +54,11 @@
       const d=DB.days?.[k];
       if(!d){unknown++;future[k]=null;continue;}
       if(WORK.includes(d.t)){
-        planned++; const m=minutesOf(k);
+        planned++; const m=minutesCached(k);
         if(m>0)future[k]=m; else {future[k]=avgDay; if(avgDay>0)estimated++;}
       } else future[k]=0;
     }
-    const valueFor=k=>{ if(k<=now)return minutesOf(k); return future[k]==null?0:future[k]; };
+    const valueFor=k=>{ if(k<=now)return minutesCached(k); return future[k]==null?0:future[k]; };
     let firstRisk=null, firstRiskAvg=null;
     for(let i=1;i<=84;i++){
       const end=addD(now,i), start=addD(end,-83);
@@ -74,12 +84,12 @@
         out.push({id:'sun14',level:uncomp>=Math.ceil(sundays.length*.6)?'bad':'warn',title:'Dimanches travaillés récurrents',text:`${sundays.length} dimanche(s) travaillé(s), intervalle médian ${med} jours ; ${uncomp} sans RC saisi dans les 7 jours suivants.`,detail:'Détection statistique : vérifier les repos/compensations réels et les justificatifs avant toute conclusion.'});
       }
     }
-    const longAmp=keys.filter(k=>minutesOf(k)>12*60);
+    const longAmp=keys.filter(k=>minutesCached(k)>12*60);
     if(longAmp.length>=3){
       const ratio=longAmp.length/Math.max(1,keys.length);
       out.push({id:'amp12',level:ratio>=.2?'bad':'warn',title:'Amplitudes > 12 h récurrentes',text:`${longAmp.length} journée(s) au-delà de 12 h d’amplitude sur ${keys.length} journée(s) travaillée(s).`,detail:'Vérifier le motif conventionnel de chaque extension.'});
     }
-    const longTte=keys.filter(k=>minutesOf(k)>10*60);
+    const longTte=keys.filter(k=>minutesCached(k)>10*60);
     if(longTte.length>=3)out.push({id:'tte10',level:'warn',title:'TTE > 10 h récurrent',text:`${longTte.length} journée(s) dépassent 10 h de TTE.`,detail:'La répétition est signalée séparément des contrôles journée par journée.'});
     const noPause=keys.filter(k=>{const r=cd(k);return r.tte>=360&&r.pz<20});
     if(noPause.length>=3)out.push({id:'pause',level:'warn',title:'Pauses manquantes récurrentes',text:`${noPause.length} journée(s) d’au moins 6 h sans 20 min de pause détectée.`,detail:'À vérifier avec les pauses réellement prises et les données ROMI1.'});

@@ -1,7 +1,7 @@
-/* MesHeures V18.0.6 — Lot 4 : rapprochement paie / temps / preuves */
+/* MesHeures V18.0.8 — Lot 4 : rapprochement paie / temps / preuves */
 (function(){
   'use strict';
-  const VERSION='18.0.6';
+  const VERSION='18.0.8';
   const esc0=window.esc||((s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
   const euro=n=>Number(n||0).toFixed(2).replace('.',',')+' €';
   const fmt=m=>{m=Math.round(Number(m||0));return Math.floor(m/60)+'h'+String(Math.abs(m%60)).padStart(2,'0')};
@@ -19,12 +19,13 @@
     return {start,end:month+'-'+String(last).padStart(2,'0')};
   }
   function calcMonth(month){
-    const r=monthRange(month), days=Object.values(DB.days||{}).filter(d=>d&&String(d.k||'')>=r.start&&String(d.k||'')<=r.end);
+    const r=monthRange(month), days=Object.entries(DB.days||{}).filter(([k,d])=>d&&k>=r.start&&k<=r.end);
     let tte=0,normal=0,h25=0,h50=0,worked=0,anomalies=0;
-    days.forEach(d=>{
-      if(Number(d.tte||0)>0)worked++;
-      tte+=Number(d.tte||0);
-      anomalies+=Array.isArray(d.al)?d.al.length:0;
+    days.forEach(([k])=>{
+      const m=window.mhCalcDay?window.mhCalcDay(k):cd(k);
+      if(Number(m.tte||0)>0)worked++;
+      tte+=Number(m.tte||0);
+      anomalies+=Array.isArray(m.al)?m.al.length:0;
     });
     // Rejoue les quatorzaines qui touchent le mois et attribue les heures selon les journées présentes.
     const byDay={};
@@ -35,8 +36,9 @@
       if(relevant.length){
         const G=calcPer(q,1).G||{};
         const allDays=[];for(let i=0;i<14;i++){const k=addD(q,i);if(DB.days?.[k])allDays.push(k)}
-        const allTte=allDays.reduce((s,k)=>s+Number(DB.days[k].tte||0),0);
-        const ratio=allTte>0?relevant.reduce((s,k)=>s+Number(DB.days[k].tte||0),0)/allTte:relevant.length/Math.max(allDays.length,1);
+        const allTte=allDays.reduce((s,k)=>s+Number((window.mhCalcDay?window.mhCalcDay(k):cd(k)).tte||0),0);
+        const relevantTte=relevant.reduce((s,k)=>s+Number((window.mhCalcDay?window.mhCalcDay(k):cd(k)).tte||0),0);
+        const ratio=allTte>0?relevantTte/allTte:relevant.length/Math.max(allDays.length,1);
         normal+=Number(G.nor||0)*ratio;h25+=Number(G.h25||0)*ratio;h50+=Number(G.h50||0)*ratio;
       }
       q=addD(q,14);
@@ -83,7 +85,7 @@
   function draw(){
     const host=document.getElementById('mhV18Reconciliation');if(!host)return;
     const rows=months().map(calcMonth);const flagged=rows.filter(x=>severity(x)==='critical'||severity(x)==='check');
-    host.innerHTML=`<div class="card mh-v18-card"><h2>💶 Rapprochement paie V18.0.6</h2><p class="mut">Compare automatiquement les temps enregistrés aux heures et au brut déclarés sur les bulletins importés. Un écart est un signal de contrôle, pas une preuve définitive d'une créance.</p><div class="mh-v18-kpis"><div><b>${rows.length}</b><span>mois analysés</span></div><div><b>${flagged.length}</b><span>écart(s) à vérifier</span></div><div><b>${euro(flagged.reduce((s,x)=>s+x.deltaGross,0))}</b><span>écart brut cumulé</span></div></div><div class="row"><button class="g" onclick="mhV18ReconciliationCSV()">⬇️ Export CSV</button><button class="g" onclick="mhV18ReconciliationRefresh()">🔄 Actualiser</button></div><div class="mh-v18-table">${rows.length?rows.map(x=>{const st=severity(x);return `<div class="mh-v18-row"><b>${esc0(x.month)}</b><span>${fmt(x.tte)} enregistrées</span><span>Calc. ${fmt(x.calcMin)}</span><span>Payé ${fmt(x.paidMin)}</span><strong class="${st==='critical'||st==='check'?'bad':'ok'}">${label(st)}</strong><span>${x.bulletin?`Δ ${fmt(x.deltaMin)} · ${euro(x.deltaGross)}`:'—'}</span>${x.bulletin&&(st==='critical'||st==='check')?`<button class="g" onclick="mhV18CreateReconciliationConstat('${x.month}')">＋ Constat</button>`:''}</div>`}).join(''):'<div class="mut">Aucun mois exploitable. Importez des bulletins ou saisissez des journées.</div>'}</div><details><summary>ℹ️ Méthode de contrôle</summary><p class="mut">Les heures calculées proviennent du moteur MesHeures et des quatorzaines. Les heures payées et le brut proviennent des champs du bulletin importé. Les primes, absences, régularisations, retenues et conventions particulières peuvent expliquer un écart de brut.</p></details></div>`;
+    host.innerHTML=`<div class="card mh-v18-card"><h2>💶 Rapprochement paie V18.0.8</h2><p class="mut">Compare automatiquement les temps enregistrés aux heures et au brut déclarés sur les bulletins importés. Un écart est un signal de contrôle, pas une preuve définitive d'une créance.</p><div class="mh-v18-kpis"><div><b>${rows.length}</b><span>mois analysés</span></div><div><b>${flagged.length}</b><span>écart(s) à vérifier</span></div><div><b>${euro(flagged.reduce((s,x)=>s+x.deltaGross,0))}</b><span>écart brut cumulé</span></div></div><div class="row"><button class="g" onclick="mhV18ReconciliationCSV()">⬇️ Export CSV</button><button class="g" onclick="mhV18ReconciliationRefresh()">🔄 Actualiser</button></div><div class="mh-v18-table">${rows.length?rows.map(x=>{const st=severity(x);return `<div class="mh-v18-row"><b>${esc0(x.month)}</b><span>${fmt(x.tte)} enregistrées</span><span>Calc. ${fmt(x.calcMin)}</span><span>Payé ${fmt(x.paidMin)}</span><strong class="${st==='critical'||st==='check'?'bad':'ok'}">${label(st)}</strong><span>${x.bulletin?`Δ ${fmt(x.deltaMin)} · ${euro(x.deltaGross)}`:'—'}</span>${x.bulletin&&(st==='critical'||st==='check')?`<button class="g" onclick="mhV18CreateReconciliationConstat('${x.month}')">＋ Constat</button>`:''}</div>`}).join(''):'<div class="mut">Aucun mois exploitable. Importez des bulletins ou saisissez des journées.</div>'}</div><details><summary>ℹ️ Méthode de contrôle</summary><p class="mut">Les heures calculées proviennent du moteur MesHeures et des quatorzaines. Les heures payées et le brut proviennent des champs du bulletin importé. Les primes, absences, régularisations, retenues et conventions particulières peuvent expliquer un écart de brut.</p></details></div>`;
   }
   window.mhV18ReconciliationCSV=()=>{init();exportCsv(months().map(calcMonth))};
   window.mhV18ReconciliationRefresh=()=>draw();

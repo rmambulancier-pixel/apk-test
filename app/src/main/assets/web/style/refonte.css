@@ -225,3 +225,195 @@ section:not(.mh-dashboard) details>summary{cursor:pointer;font-weight:700}
 .plugin-manager .row{display:flex;flex-wrap:wrap;gap:7px}.plugin-manager .row button{flex:1 1 150px}.mh-plugin-card .mh-plugin-perms span{cursor:help}.mh-plugin-card .mh-plugin-body{box-shadow:inset 0 0 0 1px #111820}.mh-plugin-card .mh-plugin-info small{white-space:normal}.plugin-manager .al{margin-bottom:10px}
 
 .mh-plugin-perms span{display:inline-block;margin:3px 4px 0 0;padding:4px 7px;border-radius:999px;border:1px solid #28506d;background:#102337;color:#78bfff;font-size:9px}.mh-plugin-card{margin-top:10px}.mhx-frame{width:100%;min-height:190px;border:0;border-radius:14px;background:#0d1117}.mh-plugin-body{margin-top:10px}
+
+/* ═══════════════════════════════════════════════
+   V18.0.8 — THEME LIGHT COMPLET / COMPATIBILITÉ
+   Les anciennes couches CSS contiennent encore des couleurs fixes.
+   Cette couche finale donne priorité au thème clair sur toutes les surfaces
+   de l'interface sans toucher au moteur métier ni aux données.
+═══════════════════════════════════════════════ */
+:root[data-theme="light"]{
+  --mh-light-bg:#f5f7f9;--mh-light-card:#ffffff;--mh-light-card2:#f8fafc;
+  --mh-light-border:#d0d7de;--mh-light-input:#ffffff;--mh-light-nav:#ffffffee;
+  --mh-light-muted:#57606a;--mh-light-text:#1f2328;
+  --mh-light-green:#1a7f37;--mh-light-green-bg:#dafbe1;
+  --mh-light-blue:#0969da;--mh-light-blue-bg:#ddf4ff;
+  --mh-light-warn:#9a6700;--mh-light-warn-bg:#fff8c5;
+  --mh-light-bad:#cf222e;--mh-light-bad-bg:#ffebe9;
+  --mh-light-purple:#8250df;--mh-light-purple-bg:#fbefff;
+}
+:root[data-theme="light"] body{background:var(--mh-light-bg)!important;color:var(--mh-light-text)!important}
+:root[data-theme="light"] header,
+:root[data-theme="light"] .fab,
+:root[data-theme="light"] .mh-v17-nav{background:var(--mh-light-nav)!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .card,
+:root[data-theme="light"] .hero,
+:root[data-theme="light"] .hero-pro,
+:root[data-theme="light"] .stat-card,
+:root[data-theme="light"] .home-card,
+:root[data-theme="light"] .home-kpi,
+:root[data-theme="light"] .kpi,
+:root[data-theme="light"] .pz,
+:root[data-theme="light"] .rec,
+:root[data-theme="light"] .security-box,
+:root[data-theme="light"] .pro-summary,
+:root[data-theme="light"] .mh-v18-card,
+:root[data-theme="light"] .mh-v18-proof,
+:root[data-theme="light"] .mh-v18-row,
+:root[data-theme="light"] .mh-v17-sheet,
+:root[data-theme="light"] .mh-v17-dialog,
+:root[data-theme="light"] .modal,
+:root[data-theme="light"] .day-menu-modal,
+:root[data-theme="light"] .selected-day-body,
+:root[data-theme="light"] .month-calendar-card{background:var(--mh-light-card)!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] input,
+:root[data-theme="light"] select,
+:root[data-theme="light"] textarea{background:var(--mh-light-input)!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] button.g,
+:root[data-theme="light"] .chips button,
+:root[data-theme="light"] .tabs button,
+:root[data-theme="light"] .mh-v17-tools button,
+:root[data-theme="light"] .mh-v17-theme button,
+:root[data-theme="light"] .text-action,
+:root[data-theme="light"] .period-pill{background:var(--mh-light-card2)!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .cel,
+:root[data-theme="light"] .audit-strip span,
+:root[data-theme="light"] .home-row,
+:root[data-theme="light"] .kpi,
+:root[data-theme="light"] .pro-grid>div,
+:root[data-theme="light"] .pay-sim-grid>div,
+:root[data-theme="light"] .security-box{background:var(--mh-light-card2)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .cel.T,
+:root[data-theme="light"] .day-state.ok,
+:root[data-theme="light"] .status-ok,
+:root[data-theme="light"] .tag.ok,
+:root[data-theme="light"] .al.k{background:var(--mh-light-green-bg)!important;color:var(--mh-light-green)!important;border-color:#82dca0!important}
+:root[data-theme="light"] .cel.RC{background:#eef2ff!important;border-color:#a5b4fc!important}
+:root[data-theme="light"] .cel.CP,
+:root[data-theme="light"] .day-state.warn,
+:root[data-theme="light"] .tag.w,
+:root[data-theme="light"] .al.w{background:var(--mh-light-warn-bg)!important;color:var(--mh-light-warn)!important;border-color:#e5c85b!important}
+:root[data-theme="light"] .cel.MAL,
+:root[data-theme="light"] .danger-soft,
+:root[data-theme="light"] .status-bad,
+:root[data-theme="light"] .tag.b,
+:root[data-theme="light"] .al.b{background:var(--mh-light-bad-bg)!important;color:var(--mh-light-bad)!important;border-color:#ffb8b3!important}
+:root[data-theme="light"] .cel.NUIT,
+:root[data-theme="light"] .day-state.pur,
+:root[data-theme="light"] .tag.i,
+:root[data-theme="light"] .al.p{background:var(--mh-light-purple-bg)!important;color:var(--mh-light-purple)!important;border-color:#d8b4fe!important}
+:root[data-theme="light"] .al.i{background:var(--mh-light-blue-bg)!important;color:var(--mh-light-blue)!important;border-color:#80caff!important}
+:root[data-theme="light"] .hero-pro,
+:root[data-theme="light"] .pro-summary{background:linear-gradient(145deg,#ffffff,#f6f8fa)!important}
+:root[data-theme="light"] .hero-pro:after{opacity:.25}
+:root[data-theme="light"] .mh-page-hero,
+:root[data-theme="light"] .mh-v17-reg,
+:root[data-theme="light"] .mh-v17-back,
+:root[data-theme="light"] .mh-v18-timeline>div{background:var(--mh-light-card2)!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .mut,
+:root[data-theme="light"] label,
+:root[data-theme="light"] th,
+:root[data-theme="light"] .home-muted,
+:root[data-theme="light"] .dash-sub,
+:root[data-theme="light"] .hero-caption{color:var(--mh-light-muted)!important}
+:root[data-theme="light"] h1,
+:root[data-theme="light"] h2,
+:root[data-theme="light"] h3,
+:root[data-theme="light"] .home-title,
+:root[data-theme="light"] .dash-kicker,
+:root[data-theme="light"] .dash-greeting,
+:root[data-theme="light"] .section-head h2,
+:root[data-theme="light"] .mh-page-title{color:var(--mh-light-text)!important}
+:root[data-theme="light"] h2{color:var(--mh-light-green)!important}
+:root[data-theme="light"] .ok,
+:root[data-theme="light"] .diff-ok,
+:root[data-theme="light"] .ok-text,
+:root[data-theme="light"] td.ok{color:var(--mh-light-green)!important}
+:root[data-theme="light"] .bad,
+:root[data-theme="light"] .diff-bad,
+:root[data-theme="light"] .bad-text,
+:root[data-theme="light"] td.bad{color:var(--mh-light-bad)!important}
+:root[data-theme="light"] .warn,
+:root[data-theme="light"] .diff-warn,
+:root[data-theme="light"] .warn-text{color:var(--mh-light-warn)!important}
+:root[data-theme="light"] .blue,
+:root[data-theme="light"] .blue-text{color:var(--mh-light-blue)!important}
+:root[data-theme="light"] .fab button{color:var(--mh-light-text)!important}
+:root[data-theme="light"] .mh-v17-nav button{color:var(--mh-light-muted)!important}
+:root[data-theme="light"] .mh-v17-nav button:active,
+:root[data-theme="light"] .mh-v17-nav button:hover{color:var(--mh-light-text)!important}
+:root[data-theme="light"] #mhSplash{background:var(--mh-light-bg)!important;color:var(--mh-light-text)!important}
+:root[data-theme="light"] #mhSplash span{color:var(--mh-light-muted)!important}
+:root[data-theme="light"] table th,
+:root[data-theme="light"] table td{border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .modal-bg{background:rgba(31,35,40,.35)!important}
+:root[data-theme="light"] [style*="background:#"],
+:root[data-theme="light"] [style*="background: #"],
+:root[data-theme="light"] [style*="background-color:#"],
+:root[data-theme="light"] [style*="background-color: #"]{background-color:var(--mh-light-card2)!important}
+
+/* Couverture complémentaire des composants issus des anciennes couches V10/V15/V17. */
+:root[data-theme="light"] [class*="panel"],
+:root[data-theme="light"] [class*="sheet"],
+:root[data-theme="light"] [class*="dialog"],
+:root[data-theme="light"] [class*="proof"],
+:root[data-theme="light"] [class*="activity"],
+:root[data-theme="light"] [class*="alert"],
+:root[data-theme="light"] [class*="smart"],
+:root[data-theme="light"] [class*="summary"],
+:root[data-theme="light"] [class*="plugin"],
+:root[data-theme="light"] [class*="backup"]{background-color:var(--mh-light-card)!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .stat-card span,
+:root[data-theme="light"] .stat-card small,
+:root[data-theme="light"] .dash-smart small,
+:root[data-theme="light"] .dash-smart span,
+:root[data-theme="light"] .activity-day small,
+:root[data-theme="light"] .activity-day span,
+:root[data-theme="light"] .dash-alert small,
+:root[data-theme="light"] .dash-alert em,
+:root[data-theme="light"] .period-pill{color:var(--mh-light-muted)!important}
+:root[data-theme="light"] .stat-card b,
+:root[data-theme="light"] .home-value,
+:root[data-theme="light"] .home-kpi b{color:var(--mh-light-text)!important}
+:root[data-theme="light"] .stat-card.purple b{color:var(--mh-light-purple)!important}
+:root[data-theme="light"] .stat-card.gold b{color:var(--mh-light-warn)!important}
+
+
+/* V18.0.8 — LIGHT THEME HARD-CODED LEGACY BRIDGE
+   This is intentionally a final cascade layer: legacy V10/V15/V16 selectors may still
+   contain literal dark colors, so these common structural surfaces must follow the theme. */
+:root[data-theme="light"] .dash-panel,
+:root[data-theme="light"] .dashboard-nav,
+:root[data-theme="light"] .dash-smart,
+:root[data-theme="light"] .audit-health,
+:root[data-theme="light"] .mh-plugin-card,
+:root[data-theme="light"] .mh-plugin-body,
+:root[data-theme="light"] .mhx-frame,
+:root[data-theme="light"] .pay-sim-card,
+:root[data-theme="light"] .pay-sim-grid>div,
+:root[data-theme="light"] .pay-sim-net,
+:root[data-theme="light"] .day-menu-summary,
+:root[data-theme="light"] .security-box,
+:root[data-theme="light"] .stat-card,
+:root[data-theme="light"] .pro-grid>div,
+:root[data-theme="light"] .audit-strip span,
+:root[data-theme="light"] .mh-v18-row,
+:root[data-theme="light"] .mh-v18-proof,
+:root[data-theme="light"] .mh-v18-intel,
+:root[data-theme="light"] .mh-v18-dossier,
+:root[data-theme="light"] .mh-v18-reconciliation {
+  background:var(--mh-light-card)!important;
+  color:var(--mh-light-text)!important;
+  border-color:var(--mh-light-border)!important;
+}
+:root[data-theme="light"] .dashboard-nav button,
+:root[data-theme="light"] .dashboard-nav button.active,
+:root[data-theme="light"] .mh-v17-tools button,
+:root[data-theme="light"] .mh-plugin-icon,
+:root[data-theme="light"] .mh-plugin-perms span {
+  background:var(--mh-light-card2)!important;
+  color:var(--mh-light-text)!important;
+  border-color:var(--mh-light-border)!important;
+}
+:root[data-theme="light"] .home-progress {background:#e5e7eb!important}
+:root[data-theme="light"] .mhx-frame {background:var(--mh-light-card)!important}
