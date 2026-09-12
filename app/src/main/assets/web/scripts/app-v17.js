@@ -1,6 +1,6 @@
 /* MesHeures V18 — interface, projection, conformité et migrations */
 (function(){
-  const V='18.0.8';
+  const V='18.0.9';
   function migrate(){
     DB.s=DB.s||{};
     if(DB.s.taux===14.02)DB.s.taux=14.20;
@@ -11,7 +11,11 @@
   function theme(t){
     t=t||DB.s.theme||'auto';DB.s.theme=t;save();
     const root=document.documentElement;
-    root.dataset.theme=t==='auto'?(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):t;
+    const resolved=t==='auto'?(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):t;
+    root.dataset.theme=resolved;
+    root.style.colorScheme=resolved;
+    const meta=document.querySelector('meta[name=theme-color]');
+    if(meta)meta.setAttribute('content',resolved==='light'?'#f5f7f9':'#0d1117');
   }
   function buildNav(){
     if(document.getElementById('mhV17Nav'))return;
@@ -53,7 +57,7 @@
   function patchRender(){
     if(window.__mhV17Render)return;window.__mhV17Render=true;const old=window.renderAll;window.renderAll=function(){old();addReg();legalCard();injectHome();renderProjection();};
   }
-  function boot(){migrate();theme(DB.s.theme);if(document.getElementById('mhVersion'))document.getElementById('mhVersion').textContent='V18.0.8';buildNav();patchHome();patchRender();addReg();legalCard();injectHome();setTimeout(()=>{try{renderAll()}catch(e){console.error(e)}},0);}
+  function boot(){migrate();theme(DB.s.theme);if(document.getElementById('mhVersion'))document.getElementById('mhVersion').textContent='V18.0.9';buildNav();patchHome();patchRender();addReg();legalCard();injectHome();setTimeout(()=>{try{renderAll()}catch(e){console.error(e)}},0);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>{if(DB.s.theme==='auto')theme('auto')});
 })();

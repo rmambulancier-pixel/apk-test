@@ -1,5 +1,5 @@
 
-## V18.0.8 — Integrity correction / Lot 8
+## V18.0.9 — Integrity correction / Lot 8
 - Canonical derived-day adapter: dossier, reconciliation and plugins now obtain TTE, amplitude, pauses and alerts through `cd(k)` / `mhCalcDay(k)`; raw `DB.days` remains unchanged.
 - Dossier exports keyed dates and computed legal metrics instead of relying on non-existent derived fields inside raw days.
 - Monthly reconciliation uses the same canonical metrics and keeps the existing payroll engine untouched.
@@ -8,11 +8,11 @@
 - Light theme receives a final compatibility cascade for legacy hard-coded dark surfaces.
 - No active feature or source file is intentionally removed.
 
-# MesHeures V18.0.8 — Android + PWA
+# MesHeures V18.0.9 — Android + PWA
 
 MesHeures est une application de suivi du temps de travail conçue pour le **transport sanitaire**, avec un focus sur le suivi des ambulanciers : saisie terrain, décompte par quatorzaine, projection, contrôle des amplitudes et du temps de travail, suivi de la paie, import de documents et sauvegardes locales.
 
-> **Version actuelle : V18.0.8 — versionCode Android 1808**
+> **Version actuelle : V18.0.9 — versionCode Android 1809**
 >
 > La V18 part de la base V17.0.1 validée et ajoute une couche d’intelligence locale : preuves, patterns récurrents, projection 12 semaines, alertes prédictives et dossier complet exportable.
 
@@ -176,7 +176,7 @@ app/src/main/
 - Gradle : 8.9
 - Android Gradle Plugin : 8.7.3
 - versionCode : 1807
-- versionName : 18.0.8
+- versionName : 18.0.9
 
 La signature de release repose sur la clé persistante configurée dans les secrets GitHub Actions. **Le keystore privé n'est pas stocké dans le dépôt.**
 
@@ -275,7 +275,7 @@ Règle d’architecture : une extension peut **lire, analyser, afficher et propo
 Projet personnel et outil de suivi. Les règles réglementaires affichées dans l'application constituent un **outil d'aide au contrôle** et ne constituent pas un avis juridique.
 
 
-## V18.0.8 — maintenance thème, performances et régression
+## V18.0.9 — maintenance thème, performances et régression
 
 - Thème clair renforcé sur les anciennes couches CSS V10/V15/V17 ainsi que les panneaux V18 : cartes, formulaires, navigation basse, calendrier, paie, plugins, preuves, modales et écran de démarrage suivent désormais le thème clair.
 - Module de preuves optimisé : calcul historique mis en cache et invalidé uniquement lors d’une sauvegarde de données.
@@ -284,9 +284,9 @@ Projet personnel et outil de suivi. Les règles réglementaires affichées dans 
 - Bouton « Effacer tout » restauré avec confirmation explicite.
 - Mode Jour initialise systématiquement une date valide lors de l’ouverture de l’onglet.
 - Aucun module V18 métier supprimé ; les fichiers historiques éventuellement inactifs sont conservés hors du bundle actif.
-- Version synchronisée : Android `18.0.8` / `versionCode 1808`, PWA, Service Worker, manifest et interface.
+- Version synchronisée : Android `18.0.9` / `versionCode 1809`, PWA, Service Worker, manifest et interface.
 
-## V18.0.8 — correctif interface, Jour et impression
+## V18.0.9 — correctif interface, Jour et impression
 
 - Suppression du menu de navigation supérieur redondant : la navigation passe par le menu inférieur et le panneau Outils existants.
 - Navigation rendue tolérante à l'absence des anciens boutons supérieurs : aucune fonction métier n'est supprimée.
@@ -294,7 +294,7 @@ Projet personnel et outil de suivi. Les règles réglementaires affichées dans 
 - Impression Android réparée via le moteur d'impression natif (`PrintManager`). Le navigateur/PWA conserve `window.print()`.
 - Impression du dossier complet routée vers l'impression native Android lorsqu'elle est disponible.
 - Vérification statique des boutons et des fonctions de navigation ; les actions existantes (saisie, planning, paie, audit, bulletins, ROMI1, réglages, sauvegardes, plugins, exports) sont conservées.
-- Version synchronisée : Android `18.0.8` / `versionCode 1808`, PWA, Service Worker et interface.
+- Version synchronisée : Android `18.0.9` / `versionCode 1809`, PWA, Service Worker et interface.
 
 ## V18.0.5 — Lot 6 : écosystème plugins
 - API plugins en lecture seule avec permissions explicites : `snapshot`, `days`, `pay`, `evidence`, `legal`.

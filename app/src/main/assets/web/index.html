@@ -125,6 +125,163 @@ tr.t{background:#1c2128}tr.t td{font-weight:700}
 
 .mh-v18-intel{margin:10px 0}.mh-v18-intel .mh-v18-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mh-v18-intel .mh-v18-kpis>div{background:#0d1117;border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center}.mh-v18-intel .mh-v18-kpis b{display:block;font-size:18px}.mh-v18-intel .mh-v18-kpis span{display:block;color:var(--dim);font-size:9px;margin-top:3px}.mh-v18-intel .mh-v18-kpis b.ok{color:var(--ok)}.mh-v18-intel .mh-v18-kpis b.warn{color:var(--warn)}.mh-v18-intel .mh-v18-kpis b.bad{color:var(--bad)}.mh-v18-intel-bar{height:7px;background:#202832;border-radius:999px;overflow:hidden;margin:10px 0 7px}.mh-v18-intel-bar i{display:block;height:100%;background:linear-gradient(90deg,#36b865,#e3b84c,#f85149)}.mh-v18-intel-note{font-size:10px;color:var(--dim);margin-bottom:9px}.mh-v18-intel details{border-top:1px solid var(--line);padding-top:9px}.mh-v18-intel details summary{font-size:12px;font-weight:700;cursor:pointer}.mh-v18-intel .al small{display:block;color:var(--dim);margin-top:4px}.mh-v18-intel .audit-empty{margin-top:8px}
 @media(max-width:600px){.mh-v18-intel .mh-v18-kpis{grid-template-columns:1fr 1fr}.mh-v18-intel .mh-v18-kpis>div:last-child{grid-column:1/-1}}
+
+/* V18.0.9 — THEME LIGHT FINAL OVERRIDE
+   Cette couche corrige les anciennes couches V10/V15/V17 qui imposaient des couleurs sombres en dur.
+   Elle ne modifie ni le moteur métier ni les données. */
+:root[data-theme="light"]{
+  --bg:#f5f7f9;--card:#ffffff;--card2:#f0f3f6;--line:#d0d7de;--txt:#1f2328;--dim:#57606a;
+  --acc:#1a7f37;--acc2:#116329;--blue:#0969da;--warn:#9a6700;--bad:#cf222e;--pur:#8250df;--ora:#bc4c00;
+  --shadow:0 8px 24px rgba(31,35,40,.10);
+  color-scheme:light;
+}
+:root[data-theme="light"] html,
+html[data-theme="light"]{background:#f5f7f9!important;color-scheme:light}
+:root[data-theme="light"] body{
+  background:#f5f7f9!important;color:#1f2328!important;
+}
+:root[data-theme="light"] header{
+  background:rgba(255,255,255,.94)!important;border-bottom-color:#d0d7de!important;box-shadow:0 4px 18px rgba(31,35,40,.08)!important;
+}
+:root[data-theme="light"] .card,
+:root[data-theme="light"] .home-card,
+:root[data-theme="light"] .dash-panel,
+:root[data-theme="light"] .activity-card,
+:root[data-theme="light"] .mh-plugin-card,
+:root[data-theme="light"] .mh-v18-card,
+:root[data-theme="light"] .mh-v18-dossier,
+:root[data-theme="light"] .mh-v18-proof,
+:root[data-theme="light"] .mh-v18-reconciliation,
+:root[data-theme="light"] .pay-sim-card,
+:root[data-theme="light"] .hero,
+:root[data-theme="light"] .hero-pro,
+:root[data-theme="light"] .pro-summary,
+:root[data-theme="light"] .security-box,
+:root[data-theme="light"] .mh-v17-sheet,
+:root[data-theme="light"] .mh-v17-dialog,
+:root[data-theme="light"] .mh-dashboard .card{
+  background:#ffffff!important;color:#1f2328!important;border-color:#d0d7de!important;box-shadow:var(--shadow)!important;
+}
+:root[data-theme="light"] .hero-pro,
+:root[data-theme="light"] .hero,
+:root[data-theme="light"] .pro-summary{
+  background:linear-gradient(145deg,#ffffff,#f4f7fa)!important;
+}
+:root[data-theme="light"] .stat-card,
+:root[data-theme="light"] .activity-day,
+:root[data-theme="light"] .mh-v17-proj-grid>div,
+:root[data-theme="light"] .mh-v18-intel .mh-v18-kpis>div,
+:root[data-theme="light"] .kpi,
+:root[data-theme="light"] .home-kpi,
+:root[data-theme="light"] .pz,
+:root[data-theme="light"] .cel,
+:root[data-theme="light"] .rec,
+:root[data-theme="light"] .audit-strip span,
+:root[data-theme="light"] .pro-grid>div,
+:root[data-theme="light"] .mh-v18-row,
+:root[data-theme="light"] .period-pill{
+  background:#f6f8fa!important;color:#1f2328!important;border-color:#d0d7de!important;
+}
+:root[data-theme="light"] .stat-card,
+:root[data-theme="light"] .activity-card,
+:root[data-theme="light"] .dash-panel{background:linear-gradient(145deg,#ffffff,#f6f8fa)!important}
+:root[data-theme="light"] .mh-v17-nav,
+:root[data-theme="light"] .fab,
+:root[data-theme="light"] .nav{
+  background:rgba(255,255,255,.96)!important;color:#1f2328!important;border-color:#d0d7de!important;box-shadow:0 -4px 18px rgba(31,35,40,.08)!important;
+}
+:root[data-theme="light"] .mh-v17-nav button,
+:root[data-theme="light"] .mh-v17-tools button,
+:root[data-theme="light"] .mh-v17-theme button,
+:root[data-theme="light"] .tabs button,
+:root[data-theme="light"] button.g{
+  background:#eef1f4!important;color:#1f2328!important;border-color:#c7cfd8!important;
+}
+:root[data-theme="light"] .mh-v17-nav button:hover,
+:root[data-theme="light"] .mh-v17-nav button:active{color:#0969da!important}
+:root[data-theme="light"] button.b{background:#eaf2ff!important;color:#0969da!important;border-color:#9ec5fe!important}
+:root[data-theme="light"] button.r{background:#fff0f0!important;color:#cf222e!important;border-color:#f2b8b8!important}
+:root[data-theme="light"] input,
+:root[data-theme="light"] select,
+:root[data-theme="light"] textarea{
+  background:#ffffff!important;color:#1f2328!important;border-color:#c7cfd8!important;
+}
+:root[data-theme="light"] input::placeholder,
+:root[data-theme="light"] textarea::placeholder{color:#8c959f!important}
+:root[data-theme="light"] .mh-page-title,
+:root[data-theme="light"] .home-title,
+:root[data-theme="light"] .dash-greeting,
+:root[data-theme="light"] .section-head h2,
+:root[data-theme="light"] .panel-title,
+:root[data-theme="light"] .dash-kicker,
+:root[data-theme="light"] h1,
+:root[data-theme="light"] h3,
+:root[data-theme="light"] td,
+:root[data-theme="light"] th{color:#1f2328!important}
+:root[data-theme="light"] .section-head h2{color:#1f2328!important}
+:root[data-theme="light"] .mh-page-sub,
+:root[data-theme="light"] .dash-sub,
+:root[data-theme="light"] .home-date,
+:root[data-theme="light"] .home-muted,
+:root[data-theme="light"] .dash-muted,
+:root[data-theme="light"] .hero-caption,
+:root[data-theme="light"] .stat-card span,
+:root[data-theme="light"] .stat-card small,
+:root[data-theme="light"] .activity-day b,
+:root[data-theme="light"] .period-pill,
+:root[data-theme="light"] .text-action,
+:root[data-theme="light"] .mut,
+:root[data-theme="light"] label,
+:root[data-theme="light"] .mh-v18-intel-note,
+:root[data-theme="light"] .mh-v17-proj-note,
+:root[data-theme="light"] .mh-v17-reg small{color:#57606a!important}
+:root[data-theme="light"] .dash-logo{background:linear-gradient(145deg,#eef2f6,#ffffff)!important;border-color:#cbd3dc!important}
+:root[data-theme="light"] .dash-settings{background:#eef1f4!important;color:#1f2328!important}
+:root[data-theme="light"] .activity-day.work strong{color:#1a7f37!important}
+:root[data-theme="light"] .activity-day.night strong{color:#8250df!important}
+:root[data-theme="light"] .activity-day.leave strong{color:#9a6700!important}
+:root[data-theme="light"] .home-kpi.ok b,
+:root[data-theme="light"] .kpi b,
+:root[data-theme="light"] .mh-v18-intel .mh-v18-kpis b.ok{color:#1a7f37!important}
+:root[data-theme="light"] .home-kpi.warn b,
+:root[data-theme="light"] .kpi.warn b,
+:root[data-theme="light"] .mh-v18-intel .mh-v18-kpis b.warn{color:#9a6700!important}
+:root[data-theme="light"] .home-kpi.bad b,
+:root[data-theme="light"] .kpi.bad b,
+:root[data-theme="light"] .mh-v18-intel .mh-v18-kpis b.bad{color:#cf222e!important}
+:root[data-theme="light"] .cel.T{background:#e8f5ec!important;border-color:#9fd3ae!important}
+:root[data-theme="light"] .cel.RC{background:#eef0ff!important;border-color:#b8c0f5!important}
+:root[data-theme="light"] .cel.CP{background:#fff7dc!important;border-color:#e3c76b!important}
+:root[data-theme="light"] .cel.MAL{background:#fff0f0!important;border-color:#e8aaaa!important}
+:root[data-theme="light"] .cel.NUIT{background:#f3ecff!important;border-color:#c8a9ed!important}
+:root[data-theme="light"] tr.q{background:#e8f5ec!important}
+:root[data-theme="light"] tr.t{background:#eef1f4!important}
+:root[data-theme="light"] .al.w{background:#fff7dc!important;border-left-color:#9a6700!important;color:#7a5200!important}
+:root[data-theme="light"] .al.b{background:#fff0f0!important;border-left-color:#cf222e!important;color:#9b1c24!important}
+:root[data-theme="light"] .al.i{background:#eaf2ff!important;border-left-color:#0969da!important;color:#0754a5!important}
+:root[data-theme="light"] .al.k{background:#e8f5ec!important;border-left-color:#1a7f37!important;color:#176b31!important}
+:root[data-theme="light"] .al.p{background:#f3ecff!important;border-left-color:#8250df!important;color:#6334a3!important}
+:root[data-theme="light"] .danger-soft{background:#fff0f0!important;border-color:#e8aaaa!important;color:#9b1c24!important}
+:root[data-theme="light"] .dash-alert{background:#f6f8fa!important;border-color:#d0d7de!important;color:#1f2328!important}
+:root[data-theme="light"] .dash-ok{background:#e8f5ec!important;color:#176b31!important}
+:root[data-theme="light"] .audit-empty{background:#f6f8fa!important;border-color:#d0d7de!important;color:#57606a!important}
+:root[data-theme="light"] .mh-v17-menu,
+:root[data-theme="light"] .mh-v17-overlay,
+:root[data-theme="light"] .modal-bg{background:rgba(31,35,40,.35)!important}
+:root[data-theme="light"] .mh-v17-sheet-head{color:#1f2328!important}
+:root[data-theme="light"] .mh-v17-theme{border-color:#d0d7de!important}
+:root[data-theme="light"] .mh-v18-intel .mh-v18-kpis>div,
+:root[data-theme="light"] .mh-v17-proj-grid>div{box-shadow:none!important}
+:root[data-theme="light"] .dash-progress,
+:root[data-theme="light"] .mh-v18-intel-bar,
+:root[data-theme="light"] .bar,
+:root[data-theme="light"] .home-progress{background:#dfe5eb!important}
+:root[data-theme="light"] .hero-play{background:#eef1f4!important;border-color:#c7cfd8!important;color:#1f2328!important}
+:root[data-theme="light"] .pay-lines div,
+:root[data-theme="light"] .home-row{border-color:#d0d7de!important}
+:root[data-theme="light"] .mh-v18-timeline,
+:root[data-theme="light"] .mh-v18-timeline *{border-color:#d0d7de!important}
+
 </style>
 </head>
 <body><div id="mhSplash"><img src="./icon.svg" alt=""><b>MesHeures</b><span>Suivre aujourd’hui · anticiper demain</span></div>
