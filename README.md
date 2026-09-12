@@ -2,7 +2,7 @@
 
 MesHeures est une application de suivi du temps de travail conçue pour le **transport sanitaire**, avec un focus sur le suivi des ambulanciers : saisie terrain, décompte par quatorzaine, projection, contrôle des amplitudes et du temps de travail, suivi de la paie, import de documents et sauvegardes locales.
 
-> **Version actuelle : V18.0.2 — versionCode Android 1802**
+> **Version actuelle : V18.0.3 — versionCode Android 1803**
 >
 > La V18 part de la base V17.0.1 validée et ajoute une couche d’intelligence locale : preuves, patterns récurrents, projection 12 semaines, alertes prédictives et dossier complet exportable.
 
@@ -121,7 +121,7 @@ Les règles sont utilisées comme aide au contrôle et à la détection d'écart
 - notification système si les permissions de l’appareil l’autorisent
 - l’alerte reste visible dans l’application si les notifications système ne sont pas disponibles
 
-## Dossier complet — V18.0.2 Lot 3
+## Dossier complet — V18.0.3 Lot 3
 
 Le Lot 3 ajoute un export probatoire unique :
 - dossier JSON regroupant les journées, bulletins, constats, événements et résultats d’intelligence locale ;
@@ -165,8 +165,8 @@ app/src/main/
 - Java : 17
 - Gradle : 8.9
 - Android Gradle Plugin : 8.7.3
-- versionCode : 1802
-- versionName : 18.0.2
+- versionCode : 1803
+- versionName : 18.0.3
 
 La signature de release repose sur la clé persistante configurée dans les secrets GitHub Actions. **Le keystore privé n'est pas stocké dans le dépôt.**
 
@@ -198,11 +198,11 @@ Avant une évolution importante ou un changement de build, il est recommandé d'
 
 ## Historique rapide
 
-### V18.0.2
+### V18.0.3
 - Lot 3 : dossier complet exportable JSON/PDF
 - empreinte SHA-256 d’intégrité de l’export
 - regroupement historique + constats + événements + bulletins + intelligence locale
-- version Android/PWA/cache/workflow synchronisée en 18.0.2
+- version Android/PWA/cache/workflow synchronisée en 18.0.3
 
 ### V18.0.1
 - intelligence locale : motifs récurrents, projection 46 h/12 semaines et alertes prédictives
