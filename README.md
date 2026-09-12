@@ -1,15 +1,15 @@
 
-## V18.0.12 — sauvegarde renforcée et restauration
+## V18.0.13 — sauvegarde renforcée et restauration
 - Centre de sauvegarde local réellement actionnable depuis Réglages.
 - Points de restauration V18 versionnés, jusqu’à 5 conservés, avec compatibilité de lecture des anciens points V17.
 - Export JSON complet crée d’abord un point de sécurité.
 - Import JSON valide la structure, crée un point de sécurité avant remplacement et restaure les paramètres manquants depuis les valeurs existantes/DEF.
 - Restauration locale protégée par un point de sécurité préalable.
 - Affichage cohérent de la dernière sauvegarde.
-- Export chiffré AES-256-GCM/PBKDF2 conservé et versionné V18.0.12.
+- Export chiffré AES-256-GCM/PBKDF2 conservé et versionné V18.0.13.
 - Aucun module métier, aucune journée, aucun bulletin, aucune fonctionnalité existante supprimés.
 
-## V18.0.12 — Integrity correction / Lot 8
+## V18.0.13 — Integrity correction / Lot 8
 - Canonical derived-day adapter: dossier, reconciliation and plugins now obtain TTE, amplitude, pauses and alerts through `cd(k)` / `mhCalcDay(k)`; raw `DB.days` remains unchanged.
 - Dossier exports keyed dates and computed legal metrics instead of relying on non-existent derived fields inside raw days.
 - Monthly reconciliation uses the same canonical metrics and keeps the existing payroll engine untouched.
@@ -18,11 +18,11 @@
 - Light theme receives a final compatibility cascade for legacy hard-coded dark surfaces.
 - No active feature or source file is intentionally removed.
 
-# MesHeures V18.0.12 — Android + PWA
+# MesHeures V18.0.13 — Android + PWA
 
 MesHeures est une application de suivi du temps de travail conçue pour le **transport sanitaire**, avec un focus sur le suivi des ambulanciers : saisie terrain, décompte par quatorzaine, projection, contrôle des amplitudes et du temps de travail, suivi de la paie, import de documents et sauvegardes locales.
 
-> **Version actuelle : V18.0.12 — versionCode Android 1812**
+> **Version actuelle : V18.0.13 — versionCode Android 1812**
 >
 > La V18 part de la base V17.0.1 validée et ajoute une couche d’intelligence locale : preuves, patterns récurrents, projection 12 semaines, alertes prédictives et dossier complet exportable.
 
@@ -186,7 +186,7 @@ app/src/main/
 - Gradle : 8.9
 - Android Gradle Plugin : 8.7.3
 - versionCode : 1807
-- versionName : 18.0.12
+- versionName : 18.0.13
 
 La signature de release repose sur la clé persistante configurée dans les secrets GitHub Actions. **Le keystore privé n'est pas stocké dans le dépôt.**
 
@@ -285,7 +285,7 @@ Règle d’architecture : une extension peut **lire, analyser, afficher et propo
 Projet personnel et outil de suivi. Les règles réglementaires affichées dans l'application constituent un **outil d'aide au contrôle** et ne constituent pas un avis juridique.
 
 
-## V18.0.12 — maintenance thème, performances et régression
+## V18.0.13 — maintenance thème, performances et régression
 
 - Thème clair renforcé sur les anciennes couches CSS V10/V15/V17 ainsi que les panneaux V18 : cartes, formulaires, navigation basse, calendrier, paie, plugins, preuves, modales et écran de démarrage suivent désormais le thème clair.
 - Module de preuves optimisé : calcul historique mis en cache et invalidé uniquement lors d’une sauvegarde de données.
@@ -294,9 +294,9 @@ Projet personnel et outil de suivi. Les règles réglementaires affichées dans 
 - Bouton « Effacer tout » restauré avec confirmation explicite.
 - Mode Jour initialise systématiquement une date valide lors de l’ouverture de l’onglet.
 - Aucun module V18 métier supprimé ; les fichiers historiques éventuellement inactifs sont conservés hors du bundle actif.
-- Version synchronisée : Android `18.0.12` / `versionCode 1811`, PWA, Service Worker, manifest et interface.
+- Version synchronisée : Android `18.0.13` / `versionCode 1811`, PWA, Service Worker, manifest et interface.
 
-## V18.0.12 — correctif interface, Jour et impression
+## V18.0.13 — correctif interface, Jour et impression
 
 - Suppression du menu de navigation supérieur redondant : la navigation passe par le menu inférieur et le panneau Outils existants.
 - Navigation rendue tolérante à l'absence des anciens boutons supérieurs : aucune fonction métier n'est supprimée.
@@ -304,7 +304,7 @@ Projet personnel et outil de suivi. Les règles réglementaires affichées dans 
 - Impression Android réparée via le moteur d'impression natif (`PrintManager`). Le navigateur/PWA conserve `window.print()`.
 - Impression du dossier complet routée vers l'impression native Android lorsqu'elle est disponible.
 - Vérification statique des boutons et des fonctions de navigation ; les actions existantes (saisie, planning, paie, audit, bulletins, ROMI1, réglages, sauvegardes, plugins, exports) sont conservées.
-- Version synchronisée : Android `18.0.12` / `versionCode 1811`, PWA, Service Worker et interface.
+- Version synchronisée : Android `18.0.13` / `versionCode 1811`, PWA, Service Worker et interface.
 
 ## V18.0.5 — Lot 6 : écosystème plugins
 - API plugins en lecture seule avec permissions explicites : `snapshot`, `days`, `pay`, `evidence`, `legal`.
@@ -320,8 +320,8 @@ Projet personnel et outil de suivi. Les règles réglementaires affichées dans 
 Les plugins peuvent **lire, analyser, afficher et proposer**. Ils ne peuvent pas **écrire, supprimer ou recalculer/modifier** les données du cœur. Toute évolution future de l’API devra ajouter une permission explicite et rester en lecture seule par défaut.
 
 
-## V18.0.12 — Correctif thème clair complet
+## V18.0.13 — Correctif thème clair complet
 - Correction finale des surfaces héritées sombres en mode clair : tableaux Paie/Bulletin, vue Mois, cellules calendrier, totaux hebdomadaires, Planning, cartes dashboard, graphiques et navigation mobile.
 - Les couleurs métier Travail/CP/RC/Nuit/Alerte restent différenciées.
 - Aucune donnée ni fonctionnalité supprimée.
-- Version Android 18.0.12 / versionCode 1811, PWA, manifest, Service Worker et workflow synchronisés.
+- Version Android 18.0.13 / versionCode 1811, PWA, manifest, Service Worker et workflow synchronisés.

@@ -13,6 +13,9 @@ import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
 import android.provider.Settings;
+import android.content.ContentResolver;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -31,7 +34,11 @@ public class MainActivity extends Activity {
     private WebView web;
     private WebView printWeb;
     private static final int FILE_PICKER = 42;
+    private static final int FILE_EXPORT = 43;
     private ValueCallback<Uri[]> uploadCallback;
+    private String pendingExportName;
+    private String pendingExportMime;
+    private StringBuilder pendingExportContent;
 
     private static final String PREFS = "mesheures_android_backup";
     private static final String STORAGE_KEY = "local_storage_snapshot";
@@ -209,6 +216,9 @@ public class MainActivity extends Activity {
                 WebChromeClient.FileChooserParams.parseResult(resultCode, data)
             );
             uploadCallback = null;
+        } else if (requestCode == FILE_EXPORT) {
+            if (resultCode == RESULT_OK && data != null) writePendingExport(data.getData());
+            else { pendingExportContent = null; pendingExportName = null; pendingExportMime = null; }
         }
     }
 
@@ -217,18 +227,72 @@ public class MainActivity extends Activity {
         else super.onBackPressed();
     }
 
+    private void openFileExportPicker() {
+        try {
+            Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType(pendingExportMime == null ? "application/octet-stream" : pendingExportMime);
+            i.putExtra(Intent.EXTRA_TITLE, pendingExportName == null ? "MesHeures-export" : pendingExportName);
+            startActivityForResult(i, FILE_EXPORT);
+        } catch (Exception e) {
+            Toast.makeText(this, "Enregistrement impossible : " + e.getMessage(), Toast.LENGTH_LONG).show();
+            pendingExportContent = null;
+        }
+    }
+
+    private void writePendingExport(Uri uri) {
+        try {
+            if (uri == null || pendingExportContent == null) throw new IllegalStateException("Export annulé");
+            ContentResolver cr = getContentResolver();
+            try (OutputStream out = cr.openOutputStream(uri)) {
+                if (out == null) throw new IllegalStateException("Impossible d’ouvrir le fichier");
+                out.write(pendingExportContent.toString().getBytes(StandardCharsets.UTF_8));
+                out.flush();
+            }
+            Toast.makeText(this, "✅ Fichier enregistré", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "❌ Enregistrement impossible : " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } finally {
+            pendingExportContent = null; pendingExportName = null; pendingExportMime = null;
+        }
+    }
+
     public class AndroidBridge {
         private final Context c;
         AndroidBridge(Context x) { c = x; }
 
         @JavascriptInterface public String platform() { return "android"; }
 
-        @JavascriptInterface public String version() { return "18.0.8"; }
+        @JavascriptInterface public String version() { return "18.0.13"; }
 
         @JavascriptInterface
         public void saveLocalStorage(String json) {
             if (json == null) return;
             backupPrefs.edit().putString(STORAGE_KEY, json).apply();
+        }
+
+        @JavascriptInterface
+        public boolean beginFileExport(String filename, String mime) {
+            try {
+                pendingExportName = filename;
+                pendingExportMime = mime;
+                pendingExportContent = new StringBuilder();
+                return true;
+            } catch (Exception e) {
+                pendingExportContent = null;
+                return false;
+            }
+        }
+
+        @JavascriptInterface
+        public void appendFileExportChunk(String chunk) {
+            if (pendingExportContent != null && chunk != null) pendingExportContent.append(chunk);
+        }
+
+        @JavascriptInterface
+        public void finishFileExport() {
+            if (pendingExportContent == null) return;
+            runOnUiThread(() -> openFileExportPicker());
         }
 
         @JavascriptInterface

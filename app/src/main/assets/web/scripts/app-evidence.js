@@ -1,9 +1,9 @@
-/* MesHeures V18.0.12 — constats, journal de preuves, chronologie, backup chiffré
+/* MesHeures V18.0.13 — constats, journal de preuves, chronologie, backup chiffré
    Optimisation : l'historique probatoire est calculé uniquement lorsqu'une donnée est modifiée.
 */
 (function(){
   'use strict';
-  const V='18.0.12';
+  const V='18.0.13';
   const NS='mhV18';
   let dataVersion=0;
   let cacheVersion=-1;
@@ -127,11 +127,11 @@
   function b64bytes(s){const bin=atob(s);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
   window.mhV18EncryptedRestore=async function(input){
     const f=input?.files?.[0];if(!f)return; const p=prompt('Mot de passe de la sauvegarde chiffrée :');if(!p)return;
-    try{const obj=JSON.parse(await f.text());if(obj.format!=='MesHeures Encrypted Backup')throw new Error('Format de sauvegarde chiffrée non reconnu.');const salt=b64bytes(obj.salt),iv=b64bytes(obj.iv),key=await deriveKey(p,salt);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,b64bytes(obj.ciphertext));const payload=JSON.parse(new TextDecoder().decode(plain));if(!payload?.data?.days)throw new Error('Structure MesHeures invalide.');mhV17Backup?.('before-encrypted-restore');if(!confirm('Restaurer cette sauvegarde chiffrée ? Une sauvegarde locale de sécurité vient d’être créée.'))return;DB={...DB,...payload.data,s:{...DEF,...(payload.data.s||{})},per:{...DB.per,...(payload.data.per||{})}};save();renderAll();alert('✅ Sauvegarde chiffrée restaurée.');}catch(e){alert('❌ Restauration impossible : mot de passe incorrect ou fichier invalide.');console.warn(e)}finally{input.value=''}
+    try{const obj=JSON.parse(await f.text());if(obj.format!=='MesHeures Encrypted Backup')throw new Error('Format de sauvegarde chiffrée non reconnu.');const salt=b64bytes(obj.salt),iv=b64bytes(obj.iv),key=await deriveKey(p,salt);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,b64bytes(obj.ciphertext));const payload=JSON.parse(new TextDecoder().decode(plain));if(!payload?.data?.days)throw new Error('Structure MesHeures invalide.');if(!confirm('Restaurer cette sauvegarde chiffrée ? Une copie de sécurité sera créée avant restauration.'))return; mhV17Backup?.('before-encrypted-restore');DB={...DB,...payload.data,s:{...DEF,...(payload.data.s||{})},per:{...DB.per,...(payload.data.per||{})}};save();renderAll();alert('✅ Sauvegarde chiffrée restaurée.');}catch(e){alert('❌ Restauration impossible : mot de passe incorrect ou fichier invalide.');console.warn(e)}finally{input.value=''}
   };
   window.mhV18EncryptedBackup=async function(){
     const p=prompt('Mot de passe pour chiffrer la sauvegarde :');if(!p)return;const p2=prompt('Confirme le mot de passe :');if(p!==p2)return alert('❌ Les mots de passe ne correspondent pas.');
-    try{init();const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await deriveKey(p,salt);const payload={format:'MesHeures Encrypted Backup',version:V,createdAt:new Date().toISOString(),data:DB};const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(payload)));const obj={format:payload.format,version:V,createdAt:payload.createdAt,kdf:'PBKDF2-SHA256',iterations:150000,cipher:'AES-256-GCM',salt:btoa(String.fromCharCode(...salt)),iv:btoa(String.fromCharCode(...iv)),ciphertext:btoa(String.fromCharCode(...new Uint8Array(ct)))};const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='MesHeures-backup-chiffre-'+today()+'.mhbackup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);alert('✅ Sauvegarde chiffrée exportée.');}catch(e){alert('❌ Chiffrement impossible : '+e.message)}
+    try{init();const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await deriveKey(p,salt);const payload={format:'MesHeures Encrypted Backup',version:V,createdAt:new Date().toISOString(),data:DB};const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(payload)));const obj={format:payload.format,version:V,createdAt:payload.createdAt,kdf:'PBKDF2-SHA256',iterations:150000,cipher:'AES-256-GCM',salt:btoa(String.fromCharCode(...salt)),iv:btoa(String.fromCharCode(...iv)),ciphertext:btoa(String.fromCharCode(...new Uint8Array(ct)))};const mode=typeof mhDownloadFile==='function'?mhDownloadFile('MesHeures-backup-chiffre-'+today()+'.mhbackup.json',JSON.stringify(obj,null,2),'application/json'):null; if(!mode){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='MesHeures-backup-chiffre-'+today()+'.mhbackup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);} alert(mode==='android'?'📁 Choisis où enregistrer la sauvegarde chiffrée.':'✅ Sauvegarde chiffrée exportée.');}catch(e){alert('❌ Chiffrement impossible : '+e.message)}
   };
   window.mhV18RenderEvidence=renderEvidence;
 

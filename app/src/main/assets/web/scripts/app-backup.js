@@ -1,6 +1,6 @@
 /* MesHeures V18 — sauvegarde locale renforcée, JSON versionné et restauration sûre */
 (function(){
-  const BACKUP_VERSION='18.0.12';
+  const BACKUP_VERSION='18.0.13';
   const PREFIX=LS+'_v18_backup_';
   const LEGACY_PREFIX=LS+'_v17_backup_';
 
@@ -37,6 +37,26 @@
     return now;
   }
 
+
+  // Export robuste : le téléchargement <a download> n'est pas fiable dans le WebView Android.
+  // Le pont natif utilise le sélecteur Android « Enregistrer sous » ; le navigateur conserve le fallback Blob.
+  window.mhDownloadFile=function(name,text,type){
+    try{
+      if(window.MesHeuresAndroid && typeof window.MesHeuresAndroid.beginFileExport==='function' && typeof window.MesHeuresAndroid.appendFileExportChunk==='function' && typeof window.MesHeuresAndroid.finishFileExport==='function'){
+        if(window.MesHeuresAndroid.beginFileExport(String(name),String(type||'application/octet-stream'))){
+          const chunkSize=12000, value=String(text);
+          for(let i=0;i<value.length;i+=chunkSize) window.MesHeuresAndroid.appendFileExportChunk(value.slice(i,i+chunkSize));
+          window.MesHeuresAndroid.finishFileExport();
+          return 'android';
+        }
+      }
+    }catch(e){console.warn('Export natif indisponible, fallback navigateur',e)}
+    const blob=new Blob([text],{type:type||'application/octet-stream'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.style.display='none';
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+    return 'browser';
+  };
+
   window.mhV17Backup=function(reason){
     try{
       const s=snapshot();s.reason=reason||'manual';
@@ -62,16 +82,13 @@
       const s=snapshot();s.reason='export';
       const result=window.mhV17Backup('export');
       if(!result.ok)throw new Error('Impossible de créer le point de sécurité avant export.');
-      const blob=new Blob([JSON.stringify(s,null,2)],{type:'application/json;charset=utf-8'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-      a.download='MesHeures-backup-V18-'+new Date().toISOString().slice(0,10)+'.json';
-      a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-      return true;
+      const mode=window.mhDownloadFile('MesHeures-backup-V18-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(s,null,2),'application/json;charset=utf-8');
+      return !!mode;
     }catch(e){alert('❌ Export impossible : '+e.message);return false;}
   };
 
   window.mhV17Import=function(input){
-    const f=input?.files?.[0];if(!f)return;
+    const f=input?.files?.[0];if(!f){return false;}
     const r=new FileReader();
     r.onload=e=>{
       try{

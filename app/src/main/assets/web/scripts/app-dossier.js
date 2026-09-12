@@ -1,7 +1,7 @@
-/* MesHeures V18.0.12 — Lot 3 : dossier complet, empreinte d'intégrité et export probatoire */
+/* MesHeures V18.0.13 — Lot 3 : dossier complet, empreinte d'intégrité et export probatoire */
 (function(){
   'use strict';
-  const VERSION='18.0.12';
+  const VERSION='18.0.13';
   const esc0=window.esc||((s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
   const euro=window.EUR||((n)=>Number(n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'}));
   const fmt=window.F||((n)=>{const m=Number(n||0);return Math.floor(m/60)+'h'+String(Math.round(m%60)).padStart(2,'0')});
@@ -36,7 +36,7 @@
     };
   }
   function compact(s){return JSON.stringify(s)}
-  function download(name,text,type){const blob=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+  function download(name,text,type){if(typeof mhDownloadFile==='function')return mhDownloadFile(name,text,type);const blob=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
   function rowsDays(days){return days.map(d=>`<tr><td>${esc0(d.k||'')}</td><td>${fmt(d.computed?.tte||0)}</td><td>${fmt(d.computed?.amp||0)}</td><td>${fmt(d.computed?.pauseMinutes||0)}</td><td>${Array.isArray(d.computed?.alerts)&&d.computed.alerts.length?esc0(d.computed.alerts.map(a=>a.m||'').join(' · ')):'—'}</td></tr>`).join('')}
   function rowsConstats(cs){return cs.map(c=>`<tr><td>${esc0(c.id)}</td><td>${esc0(c.jour_concerne)}</td><td>${esc0(c.regle_violie)}</td><td>${esc0(c.article_source)}</td><td>${euro(c.calcul_montant_du||0)}</td></tr>`).join('')}
   function reportHtml(s,hash,title,recipient){
@@ -74,7 +74,7 @@
   }
   function render(){
     const target=document.getElementById('s-audit')||document.body;if(document.getElementById('mhV18Dossier'))return;
-    const sec=document.createElement('section');sec.id='mhV18Dossier';sec.innerHTML=`<div class="card mh-v18-card"><h2>📁 Dossier complet V18.0.12</h2><p class="mut">Regroupe l'historique, les constats, les événements, les bulletins et l'intelligence locale dans un export unique.</p><div class="row"><button onclick="mhV18ExportDossier()">⬇️ Export dossier JSON</button><button class="g" onclick="mhV18PrintDossier()">🖨️ Dossier imprimable / PDF</button></div><div id="mhV18DossierHash" class="mut" style="margin-top:8px"></div></div>`;target.appendChild(sec);refreshHash();
+    const sec=document.createElement('section');sec.id='mhV18Dossier';sec.innerHTML=`<div class="card mh-v18-card"><h2>📁 Dossier complet V18.0.13</h2><p class="mut">Regroupe l'historique, les constats, les événements, les bulletins et l'intelligence locale dans un export unique.</p><div class="row"><button onclick="mhV18ExportDossier()">⬇️ Export dossier JSON</button><button class="g" onclick="mhV18PrintDossier()">🖨️ Dossier imprimable / PDF</button></div><div id="mhV18DossierHash" class="mut" style="margin-top:8px"></div></div>`;target.appendChild(sec);refreshHash();
   }
   async function refreshHash(){try{const h=await digestText(compact(snapshot()));const el=document.getElementById('mhV18DossierHash');if(el)el.textContent='Empreinte actuelle SHA-256 : '+h}catch(e){}}
   window.mhV18ExportDossier=()=>makeDossier(false);
