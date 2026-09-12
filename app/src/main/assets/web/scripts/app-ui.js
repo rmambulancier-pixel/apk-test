@@ -16,11 +16,24 @@ function closeModal(id){$('undoModal').classList.remove('on')}
 function tab(t){
   curTab=t;
   ['home','jour','mois','paie','audit','bul','romi','reg'].forEach(x=>{
-    $('s-'+x).classList.toggle('on',x===t);
-    $('t-'+x).classList.toggle('on',x===t);
+    const sec=$('s-'+x),btn=$('t-'+x);
+    if(sec)sec.classList.toggle('on',x===t);
+    if(btn)btn.classList.toggle('on',x===t);
   });
   window.scrollTo(0,0);
   renderAll();
+}
+
+// Impression robuste : Android utilise le moteur d'impression natif,
+// le navigateur/PWA conserve window.print().
+function mhPrint(){
+  try{
+    if(window.MesHeuresAndroid && typeof window.MesHeuresAndroid.printPage==='function'){
+      window.MesHeuresAndroid.printPage();
+      return;
+    }
+  }catch(e){console.warn('Impression Android',e)}
+  try{window.print()}catch(e){alert('❌ Impression indisponible : '+e.message)}
 }
 
 function goDay(n){curDate=addD(curDate,n);renderDay()}
@@ -392,8 +405,8 @@ function renderAll(){
   DB.periods.forEach(p=>{const{AL}=calcPer(p.start,p.nb);tot+=AL.filter(a=>a.lvl==='b').length});
   const badge=$('hBadge');
   if(tot>0){badge.style.display='';badge.textContent=tot}else badge.style.display='none';
-  $('t-audit').querySelector('.tb')?.remove();
-  if(tot>0){const sp=document.createElement('span');sp.className='tb';sp.textContent=tot;$('t-audit').appendChild(sp)}
+  $('t-audit')?.querySelector('.tb')?.remove();
+  if(tot>0){const auditTab=$('t-audit');if(auditTab){const sp=document.createElement('span');sp.className='tb';sp.textContent=tot;auditTab.appendChild(sp)}}
 }
 
 function copySum(){

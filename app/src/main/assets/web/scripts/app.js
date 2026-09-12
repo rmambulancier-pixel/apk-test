@@ -438,7 +438,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catc
    V15 — INTELLIGENCE / SÉCURITÉ / MODE PRO
    Couche additive : ne modifie pas les règles de calcul historiques.
 ═══════════════════════════════════════════════ */
-const MH_V='18.0.5';
+const MH_V='18.0.6';
 
 function mhMonthStats(ym){
   const [y,m]=ym.split('-').map(Number), last=isoOf(new Date(y,m,0));
@@ -614,7 +614,7 @@ function expo(){
   DB.exp=new Date().toLocaleDateString('fr-FR');save();
   const payload={format:'MesHeures Backup',version:MH_V,exportedAt:now,data:DB};
   const b=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mesheures-v17-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);renderReg();
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mesheures-v18-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);renderReg();
 }
 function impo(i){
   if(typeof mhV17Import==='function') return mhV17Import(i);
@@ -684,7 +684,7 @@ function mhDecoratePages(){
   });
 }
 
-if($('mhVersion'))$('mhVersion').textContent='V18.0.5';
+if($('mhVersion'))$('mhVersion').textContent='V18.0.6';
 mhDecoratePages();
 mhAutoBackup();
 setTimeout(()=>{try{renderAll()}catch(e){console.error('V15 render',e)}},0);

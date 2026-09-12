@@ -1,7 +1,7 @@
-/* MesHeures V18.0.5 — Lot 3 : dossier complet, empreinte d'intégrité et export probatoire */
+/* MesHeures V18.0.6 — Lot 3 : dossier complet, empreinte d'intégrité et export probatoire */
 (function(){
   'use strict';
-  const VERSION='18.0.5';
+  const VERSION='18.0.6';
   const esc0=window.esc||((s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
   const euro=window.EUR||((n)=>Number(n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'}));
   const fmt=window.F||((n)=>{const m=Number(n||0);return Math.floor(m/60)+'h'+String(Math.round(m%60)).padStart(2,'0')});
@@ -57,12 +57,21 @@
   }
   async function makeDossier(print){
     const s=snapshot(); const canonical=compact(s); const hash=await digestText(canonical); const recipient=prompt('Objet / destinataire du dossier (facultatif) :','');
-    if(print){const w=window.open('','_blank');if(!w)return alert('Autorise les fenêtres contextuelles pour générer le dossier.');w.document.write(reportHtml(s,hash,'MesHeures — Dossier complet',recipient));w.document.close();setTimeout(()=>w.print(),500);return}
+    if(print){
+      const html=reportHtml(s,hash,'MesHeures — Dossier complet',recipient);
+      try{
+        if(window.MesHeuresAndroid && typeof window.MesHeuresAndroid.printHtml==='function'){
+          window.MesHeuresAndroid.printHtml(html);
+          return;
+        }
+      }catch(e){console.warn('Impression dossier Android',e)}
+      const w=window.open('','_blank');if(!w)return alert('Autorise les fenêtres contextuelles pour générer le dossier.');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);return
+    }
     const out={...s,integrity:{algorithm:'SHA-256',hash,canonicalization:'JSON.stringify(snapshot)'}};download('MesHeures-dossier-complet-'+today()+'.json',JSON.stringify(out,null,2),'application/json');alert('✅ Dossier JSON exporté.\nEmpreinte SHA-256 : '+hash);
   }
   function render(){
     const target=document.getElementById('s-audit')||document.body;if(document.getElementById('mhV18Dossier'))return;
-    const sec=document.createElement('section');sec.id='mhV18Dossier';sec.innerHTML=`<div class="card mh-v18-card"><h2>📁 Dossier complet V18.0.5</h2><p class="mut">Regroupe l'historique, les constats, les événements, les bulletins et l'intelligence locale dans un export unique.</p><div class="row"><button onclick="mhV18ExportDossier()">⬇️ Export dossier JSON</button><button class="g" onclick="mhV18PrintDossier()">🖨️ Dossier imprimable / PDF</button></div><div id="mhV18DossierHash" class="mut" style="margin-top:8px"></div></div>`;target.appendChild(sec);refreshHash();
+    const sec=document.createElement('section');sec.id='mhV18Dossier';sec.innerHTML=`<div class="card mh-v18-card"><h2>📁 Dossier complet V18.0.6</h2><p class="mut">Regroupe l'historique, les constats, les événements, les bulletins et l'intelligence locale dans un export unique.</p><div class="row"><button onclick="mhV18ExportDossier()">⬇️ Export dossier JSON</button><button class="g" onclick="mhV18PrintDossier()">🖨️ Dossier imprimable / PDF</button></div><div id="mhV18DossierHash" class="mut" style="margin-top:8px"></div></div>`;target.appendChild(sec);refreshHash();
   }
   async function refreshHash(){try{const h=await digestText(compact(snapshot()));const el=document.getElementById('mhV18DossierHash');if(el)el.textContent='Empreinte actuelle SHA-256 : '+h}catch(e){}}
   window.mhV18ExportDossier=()=>makeDossier(false);

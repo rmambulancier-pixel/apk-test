@@ -9,6 +9,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.provider.Settings;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -26,6 +29,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends Activity {
 
     private WebView web;
+    private WebView printWeb;
     private static final int FILE_PICKER = 42;
     private ValueCallback<Uri[]> uploadCallback;
 
@@ -219,12 +223,65 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface public String platform() { return "android"; }
 
-        @JavascriptInterface public String version() { return "18.0.5"; }
+        @JavascriptInterface public String version() { return "18.0.6"; }
 
         @JavascriptInterface
         public void saveLocalStorage(String json) {
             if (json == null) return;
             backupPrefs.edit().putString(STORAGE_KEY, json).apply();
+        }
+
+        @JavascriptInterface
+        public void printPage() {
+            runOnUiThread(() -> {
+                try {
+                    PrintManager pm = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                    if (pm == null) {
+                        Toast.makeText(c, "Impression indisponible", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    PrintDocumentAdapter adapter = web.createPrintDocumentAdapter("MesHeures");
+                    pm.print("MesHeures", adapter, new PrintAttributes.Builder().build());
+                } catch (Exception e) {
+                    Toast.makeText(c, "Impression impossible : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void printHtml(String html) {
+            runOnUiThread(() -> {
+                try {
+                    if (html == null || html.length() > 2_000_000) {
+                        Toast.makeText(c, "Document trop volumineux", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (printWeb != null) {
+                        try { ((android.view.ViewGroup) printWeb.getParent()).removeView(printWeb); } catch (Exception ignored) {}
+                        printWeb.destroy();
+                    }
+                    printWeb = new WebView(MainActivity.this);
+                    printWeb.getSettings().setJavaScriptEnabled(false);
+                    printWeb.setBackgroundColor(android.graphics.Color.WHITE);
+                    printWeb.setWebViewClient(new WebViewClient() {
+                        @Override public void onPageFinished(WebView view, String url) {
+                            try {
+                                PrintManager pm = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                                if (pm == null) throw new IllegalStateException("Impression indisponible");
+                                PrintDocumentAdapter adapter = view.createPrintDocumentAdapter("MesHeures-dossier");
+                                pm.print("MesHeures — Dossier", adapter, new PrintAttributes.Builder().build());
+                            } catch (Exception e) {
+                                Toast.makeText(c, "Impression impossible : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                    android.widget.FrameLayout root = (android.widget.FrameLayout) web.getParent();
+                    root.addView(printWeb, new android.widget.FrameLayout.LayoutParams(1, 1));
+                    printWeb.loadDataWithBaseURL("file:///android_asset/web/", html, "text/html", "UTF-8", null);
+                } catch (Exception e) {
+                    Toast.makeText(c, "Impression impossible : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         @JavascriptInterface

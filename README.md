@@ -1,8 +1,8 @@
-# MesHeures V18.0.5 — Android + PWA
+# MesHeures V18.0.6 — Android + PWA
 
 MesHeures est une application de suivi du temps de travail conçue pour le **transport sanitaire**, avec un focus sur le suivi des ambulanciers : saisie terrain, décompte par quatorzaine, projection, contrôle des amplitudes et du temps de travail, suivi de la paie, import de documents et sauvegardes locales.
 
-> **Version actuelle : V18.0.5 — versionCode Android 1805**
+> **Version actuelle : V18.0.6 — versionCode Android 1806**
 >
 > La V18 part de la base V17.0.1 validée et ajoute une couche d’intelligence locale : preuves, patterns récurrents, projection 12 semaines, alertes prédictives et dossier complet exportable.
 
@@ -165,8 +165,8 @@ app/src/main/
 - Java : 17
 - Gradle : 8.9
 - Android Gradle Plugin : 8.7.3
-- versionCode : 1805
-- versionName : 18.0.5
+- versionCode : 1806
+- versionName : 18.0.6
 
 La signature de release repose sur la clé persistante configurée dans les secrets GitHub Actions. **Le keystore privé n'est pas stocké dans le dépôt.**
 
@@ -264,6 +264,16 @@ Règle d’architecture : une extension peut **lire, analyser, afficher et propo
 
 Projet personnel et outil de suivi. Les règles réglementaires affichées dans l'application constituent un **outil d'aide au contrôle** et ne constituent pas un avis juridique.
 
+
+## V18.0.6 — correctif interface, Jour et impression
+
+- Suppression du menu de navigation supérieur redondant : la navigation passe par le menu inférieur et le panneau Outils existants.
+- Navigation rendue tolérante à l'absence des anciens boutons supérieurs : aucune fonction métier n'est supprimée.
+- Mode **Jour** sécurisé : changement d'onglet et rendu ne dépendent plus de boutons du menu supérieur.
+- Impression Android réparée via le moteur d'impression natif (`PrintManager`). Le navigateur/PWA conserve `window.print()`.
+- Impression du dossier complet routée vers l'impression native Android lorsqu'elle est disponible.
+- Vérification statique des boutons et des fonctions de navigation ; les actions existantes (saisie, planning, paie, audit, bulletins, ROMI1, réglages, sauvegardes, plugins, exports) sont conservées.
+- Version synchronisée : Android `18.0.6` / `versionCode 1806`, PWA, Service Worker et interface.
 
 ## V18.0.5 — Lot 6 : écosystème plugins
 - API plugins en lecture seule avec permissions explicites : `snapshot`, `days`, `pay`, `evidence`, `legal`.
