@@ -438,7 +438,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catc
    V15 — INTELLIGENCE / SÉCURITÉ / MODE PRO
    Couche additive : ne modifie pas les règles de calcul historiques.
 ═══════════════════════════════════════════════ */
-const MH_V='18.0.1';
+const MH_V='18.0.4';
 
 function mhMonthStats(ym){
   const [y,m]=ym.split('-').map(Number), last=isoOf(new Date(y,m,0));
@@ -628,18 +628,18 @@ function impo(i){
   }catch(x){alert('Fichier illisible : '+x.message)}finally{i.value=''}};r.readAsText(f);
 }
 function mhRestorePreImport(){
-  if(typeof mhV17ListBackups!=='function') return alert('Module de sauvegarde V17 indisponible.');
+  if(typeof mhV17ListBackups!=='function') return alert('Module de sauvegarde V18 indisponible.');
   const list=mhV17ListBackups();
-  if(!list.length)return alert('Aucune sauvegarde V17 disponible.');
+  if(!list.length)return alert('Aucune sauvegarde locale disponible.');
   mhV17Restore(list[0].key);
 }
 function mhBackupLocal(){
-  if(typeof mhV17Backup==='function') { mhV17Backup('manual'); renderReg(); alert('✅ Point de restauration V17 créé.'); return; }
+  if(typeof mhV17Backup==='function') { mhV17Backup('manual'); renderReg(); alert('✅ Point de restauration créé.'); return; }
   localStorage.setItem(LS+'_manual',JSON.stringify(DB));localStorage.setItem(LS+'_manualAt',new Date().toISOString());save();renderReg();alert('✅ Point de restauration local créé.');
 }
 function mhRestoreLocal(){
   if(typeof mhV17BackupPanel==='function') return mhV17BackupPanel();
-  alert('Centre de sauvegarde V17 indisponible.');
+  alert('Centre de sauvegarde V18 indisponible.');
 }
 function mhTogglePro(){DB.s.proMode=!DB.s.proMode;save();document.body.classList.toggle('pro-mode',!!DB.s.proMode);renderReg();}
 
@@ -648,7 +648,7 @@ function mhAutoBackup(){
 }
 function mhRestoreAuto(){
   if(typeof mhV17BackupPanel==='function') return mhV17BackupPanel();
-  alert('Centre de sauvegarde V17 indisponible.');
+  alert('Centre de sauvegarde V18 indisponible.');
 }
 
 /* Compléments de réglages sans modifier le HTML historique. */
@@ -684,7 +684,7 @@ function mhDecoratePages(){
   });
 }
 
-if($('mhVersion'))$('mhVersion').textContent='V18.0.1';
+if($('mhVersion'))$('mhVersion').textContent='V18.0.4';
 mhDecoratePages();
 mhAutoBackup();
 setTimeout(()=>{try{renderAll()}catch(e){console.error('V15 render',e)}},0);

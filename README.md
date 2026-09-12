@@ -2,7 +2,7 @@
 
 MesHeures est une application de suivi du temps de travail conçue pour le **transport sanitaire**, avec un focus sur le suivi des ambulanciers : saisie terrain, décompte par quatorzaine, projection, contrôle des amplitudes et du temps de travail, suivi de la paie, import de documents et sauvegardes locales.
 
-> **Version actuelle : V18.0.3 — versionCode Android 1803**
+> **Version actuelle : V18.0.4 — versionCode Android 1804**
 >
 > La V18 part de la base V17.0.1 validée et ajoute une couche d’intelligence locale : preuves, patterns récurrents, projection 12 semaines, alertes prédictives et dossier complet exportable.
 
@@ -121,7 +121,7 @@ Les règles sont utilisées comme aide au contrôle et à la détection d'écart
 - notification système si les permissions de l’appareil l’autorisent
 - l’alerte reste visible dans l’application si les notifications système ne sont pas disponibles
 
-## Dossier complet — V18.0.3 Lot 3
+## Dossier complet — V18.0.4 Lot 3
 
 Le Lot 3 ajoute un export probatoire unique :
 - dossier JSON regroupant les journées, bulletins, constats, événements et résultats d’intelligence locale ;
@@ -165,8 +165,8 @@ app/src/main/
 - Java : 17
 - Gradle : 8.9
 - Android Gradle Plugin : 8.7.3
-- versionCode : 1803
-- versionName : 18.0.3
+- versionCode : 1804
+- versionName : 18.0.4
 
 La signature de release repose sur la clé persistante configurée dans les secrets GitHub Actions. **Le keystore privé n'est pas stocké dans le dépôt.**
 
@@ -196,13 +196,36 @@ Une désinstallation n'est pas nécessaire pour une mise à jour signée compati
 
 Avant une évolution importante ou un changement de build, il est recommandé d'effectuer un **export JSON complet** depuis MesHeures. Le fichier JSON constitue une sauvegarde portable des données de l'application.
 
+## Extensions / plugins — V18.0.4 Lot 5
+
+MesHeures dispose d’un système d’extensions `.mhplugin` permettant d’ajouter des modules sans modifier le cœur de l’application.
+
+- exécution dans un `iframe` sandboxé ;
+- pas d’accès direct au DOM MesHeures ;
+- politique CSP locale du cadre plugin ;
+- accès réseau bloqué dans le cadre plugin ;
+- permission actuellement disponible : `snapshot` (statistiques du mois et ancienneté) ;
+- installation validée par manifeste et taille maximale de 180 Ko ;
+- refus des permissions inconnues ;
+- activation/désactivation et désinstallation ;
+- export de la liste des plugins installés ;
+- extension officielle de démonstration « Mes Droits ».
+
+Le système est volontairement limité : une extension ne reçoit pas automatiquement les données de MesHeures. Elle doit déclarer une permission autorisée et utiliser l’API prévue. Les futures permissions devront être ajoutées explicitement et documentées.
+
+### V18.0.4
+- Lot 5 : système plugins renforcé et documenté
+- correction du numéro de version affiché dans l’interface : toutes les couches utilisent 18.0.4
+- Android versionCode 1804 / versionName 18.0.4
+- cache PWA et workflow APK alignés en 18.0.4
+
 ## Historique rapide
 
-### V18.0.3
+### V18.0.4
 - Lot 3 : dossier complet exportable JSON/PDF
 - empreinte SHA-256 d’intégrité de l’export
 - regroupement historique + constats + événements + bulletins + intelligence locale
-- version Android/PWA/cache/workflow synchronisée en 18.0.3
+- version Android/PWA/cache/workflow synchronisée en 18.0.4
 
 ### V18.0.1
 - intelligence locale : motifs récurrents, projection 46 h/12 semaines et alertes prédictives
