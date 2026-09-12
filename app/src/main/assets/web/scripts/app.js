@@ -596,7 +596,7 @@ function renderPay(){
   if(proNet)proNet.textContent=EUR(tot*DB.s.net);
   if(proHours)proHours.textContent=F(G.h25+G.h50);
 
-  // V18.0.10 : le champ « Écart bulletin » ne doit plus confondre
+  // V18.0.11 : le champ « Écart bulletin » ne doit plus confondre
   // l'absence de saisie RC de la quatorzaine avec l'absence de bulletin.
   // Les bulletins sont mensuels et une quatorzaine peut chevaucher deux mois.
   // On recherche donc les bulletins dont le mois intersecte réellement la période.

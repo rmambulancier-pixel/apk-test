@@ -417,3 +417,145 @@ section:not(.mh-dashboard) details>summary{cursor:pointer;font-weight:700}
 }
 :root[data-theme="light"] .home-progress {background:#e5e7eb!important}
 :root[data-theme="light"] .mhx-frame {background:var(--mh-light-card)!important}
+
+
+/* V18.0.11 — LIGHT THEME COMPLETE SURFACE PASS
+   Corrige les surfaces héritées encore sombres dans Paie, Mois, Planning,
+   tableaux, navigation mobile et composants graphiques. Les couleurs métier
+   (travail/CP/RC/alerte) restent volontairement différenciées. */
+:root[data-theme="light"] .mh-v17-nav,
+:root[data-theme="light"] .fab,
+:root[data-theme="light"] header{background:#ffffffee!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+
+:root[data-theme="light"] table,
+:root[data-theme="light"] table thead,
+:root[data-theme="light"] table tbody,
+:root[data-theme="light"] table tr,
+:root[data-theme="light"] .mh-v18-table,
+:root[data-theme="light"] .mh-v17-legal-list,
+:root[data-theme="light"] .mh-v18-table-wrap{
+  background:var(--mh-light-card)!important;
+  color:var(--mh-light-text)!important;
+}
+:root[data-theme="light"] table td,
+:root[data-theme="light"] table th{color:var(--mh-light-text)!important;background:transparent!important}
+:root[data-theme="light"] table th{color:var(--mh-light-muted)!important}
+:root[data-theme="light"] table tr.q{background:var(--mh-light-green-bg)!important}
+:root[data-theme="light"] table tr.q td{color:var(--mh-light-green)!important}
+:root[data-theme="light"] table tr.t{background:#eef2f5!important}
+:root[data-theme="light"] table tr.t td{color:var(--mh-light-text)!important}
+
+/* Paie : détails, brut, rapprochement et tableaux de synthèse. */
+:root[data-theme="light"] #pTab,
+:root[data-theme="light"] #pBrut,
+:root[data-theme="light"] #pCmp,
+:root[data-theme="light"] #aAnn,
+:root[data-theme="light"] #aTab,
+:root[data-theme="light"] #bulTab{background:#ffffff!important;color:var(--mh-light-text)!important}
+:root[data-theme="light"] #pTab tr,
+:root[data-theme="light"] #pBrut tr,
+:root[data-theme="light"] #pCmp tr,
+:root[data-theme="light"] #aAnn tr,
+:root[data-theme="light"] #aTab tr,
+:root[data-theme="light"] #bulTab tr{background:#ffffff!important;color:var(--mh-light-text)!important}
+:root[data-theme="light"] #pTab tr.q,
+:root[data-theme="light"] #pBrut tr.q,
+:root[data-theme="light"] #pCmp tr.q{background:var(--mh-light-green-bg)!important}
+
+/* Vue mensuelle : toolbar, modes, cellules et totaux hebdomadaires. */
+:root[data-theme="light"] .month-toolbar,
+:root[data-theme="light"] .month-modes,
+:root[data-theme="light"] .week-total,
+:root[data-theme="light"] .month-selected,
+:root[data-theme="light"] .selected-icon,
+:root[data-theme="light"] .month-legend{background:#ffffff!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .month-modes button{color:var(--mh-light-muted)!important;background:transparent!important}
+:root[data-theme="light"] .month-modes button.on{background:linear-gradient(180deg,#1aaf5d,#138d49)!important;color:#fff!important}
+:root[data-theme="light"] .month-calendar-card .cel{
+  background:#ffffff!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important;
+  box-shadow:none!important;
+}
+:root[data-theme="light"] .month-calendar-card .cel .d,
+:root[data-theme="light"] .month-calendar-card .day-secondary,
+:root[data-theme="light"] .week-total span,
+:root[data-theme="light"] .week-total small{color:var(--mh-light-muted)!important}
+:root[data-theme="light"] .month-calendar-card .cel .v{color:var(--mh-light-text)!important}
+:root[data-theme="light"] .month-calendar-card .cel.work{background:var(--mh-light-green-bg)!important;border-color:#9ad8b0!important}
+:root[data-theme="light"] .month-calendar-card .cel.night{background:#f1eafe!important;border-color:#cbb8f2!important}
+:root[data-theme="light"] .month-calendar-card .cel.leave{background:var(--mh-light-warn-bg)!important;border-color:#e7cf7a!important}
+:root[data-theme="light"] .month-calendar-card .cel.rest{background:#eef2ff!important;border-color:#b9c2f5!important}
+:root[data-theme="light"] .month-calendar-card .cel.sick{background:var(--mh-light-bad-bg)!important;border-color:#efaaa6!important}
+:root[data-theme="light"] .month-calendar-card .cel.work .v{color:var(--mh-light-green)!important}
+:root[data-theme="light"] .month-calendar-card .cel.night .v{color:var(--mh-light-purple)!important}
+:root[data-theme="light"] .month-calendar-card .cel.leave .v{color:var(--mh-light-warn)!important}
+:root[data-theme="light"] .month-calendar-card .cel.rest .v{color:#4f5fb4!important}
+:root[data-theme="light"] .month-calendar-card .cel.sick .v{color:var(--mh-light-bad)!important}
+:root[data-theme="light"] .week-total{background:#f7f9fb!important}
+:root[data-theme="light"] .week-total b{color:var(--mh-light-green)!important}
+:root[data-theme="light"] .selected-day-body{background:transparent!important}
+:root[data-theme="light"] .selected-icon.work{background:var(--mh-light-green-bg)!important;border-color:#9ad8b0!important}
+:root[data-theme="light"] .selected-icon.leave{background:var(--mh-light-warn-bg)!important;border-color:#e7cf7a!important}
+:root[data-theme="light"] .selected-icon.rest{background:#eef2ff!important;border-color:#b9c2f5!important}
+:root[data-theme="light"] .selected-icon.night{background:#f1eafe!important;border-color:#cbb8f2!important}
+
+/* Planning et cartes d'activité. */
+:root[data-theme="light"] .activity-card,
+:root[data-theme="light"] .activity-day,
+:root[data-theme="light"] .dash-panel,
+:root[data-theme="light"] .dash-smart,
+:root[data-theme="light"] .audit-health,
+:root[data-theme="light"] .plan-row,
+:root[data-theme="light"] .day-badge,
+:root[data-theme="light"] .audit-empty{
+  background:#ffffff!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important;
+}
+:root[data-theme="light"] .activity-day.work{background:var(--mh-light-green-bg)!important}
+:root[data-theme="light"] .activity-day.leave{background:var(--mh-light-warn-bg)!important}
+:root[data-theme="light"] .activity-day.night{background:#f1eafe!important}
+:root[data-theme="light"] .activity-day.rest{background:#eef2ff!important}
+:root[data-theme="light"] .activity-day.empty{background:#f7f9fb!important}
+:root[data-theme="light"] .plan-row.work{background:var(--mh-light-green-bg)!important}
+:root[data-theme="light"] .plan-row.leave{background:var(--mh-light-warn-bg)!important}
+:root[data-theme="light"] .plan-row.rest{background:#eef2ff!important}
+:root[data-theme="light"] .plan-row.night{background:#f1eafe!important}
+:root[data-theme="light"] .plan-row.critical{background:var(--mh-light-bad-bg)!important}
+:root[data-theme="light"] .day-badge.work{background:var(--mh-light-green-bg)!important;color:var(--mh-light-green)!important}
+:root[data-theme="light"] .day-badge.leave{background:var(--mh-light-warn-bg)!important;color:var(--mh-light-warn)!important}
+:root[data-theme="light"] .day-badge.rest{background:#eef2ff!important;color:#4f5fb4!important}
+:root[data-theme="light"] .day-badge.night{background:#f1eafe!important;color:var(--mh-light-purple)!important}
+:root[data-theme="light"] .day-badge.sick{background:var(--mh-light-bad-bg)!important;color:var(--mh-light-bad)!important}
+
+/* Cartes dashboard / graphiques. */
+:root[data-theme="light"] .hero-pro,
+:root[data-theme="light"] .stat-card,
+:root[data-theme="light"] .activity-card,
+:root[data-theme="light"] .pay-sim-card,
+:root[data-theme="light"] .pay-sim-grid>div,
+:root[data-theme="light"] .pay-sim-net,
+:root[data-theme="light"] .pro-grid>div,
+:root[data-theme="light"] .mh-plugin-card,
+:root[data-theme="light"] .mh-plugin-body,
+:root[data-theme="light"] .security-box{background:#ffffff!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .stat-card span,
+:root[data-theme="light"] .stat-card small,
+:root[data-theme="light"] .pay-sim-grid span,
+:root[data-theme="light"] .sim-disclaimer,
+:root[data-theme="light"] .mh-plugin-info small,
+:root[data-theme="light"] .mh-plugin-card p{color:var(--mh-light-muted)!important}
+:root[data-theme="light"] .pay-sim-net{background:var(--mh-light-green-bg)!important;border-color:#9ad8b0!important}
+:root[data-theme="light"] .dash-progress,
+:root[data-theme="light"] .home-progress,
+:root[data-theme="light"] .mh-v18-intel-bar{background:#e5e7eb!important}
+:root[data-theme="light"] .chart{background:#ffffff!important}
+
+/* Navigation mobile : elle ne doit plus rester noire en mode clair. */
+:root[data-theme="light"] .mh-v17-nav button,
+:root[data-theme="light"] .fab button{background:transparent!important;color:var(--mh-light-muted)!important}
+:root[data-theme="light"] .mh-v17-nav button:active,
+:root[data-theme="light"] .mh-v17-nav button:hover{color:var(--mh-light-text)!important}
+
+/* Fichiers / plugins / cadres intégrés. */
+:root[data-theme="light"] .mh-plugin-icon,
+:root[data-theme="light"] .mh-plugin-perms span,
+:root[data-theme="light"] .mhx-frame{background:#f7f9fb!important;color:var(--mh-light-text)!important;border-color:var(--mh-light-border)!important}
+:root[data-theme="light"] .mh-plugin-perms span{color:var(--mh-light-blue)!important;border-color:#9cc7f5!important;background:#eef6ff!important}
