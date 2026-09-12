@@ -1,27 +1,113 @@
-/* MesHeures V17 — sauvegarde locale et JSON versionné */
+/* MesHeures V18 — sauvegarde locale renforcée, JSON versionné et restauration sûre */
 (function(){
-  const PREFIX=LS+'_v17_backup_';
-  function snapshot(){return {format:'MesHeures Backup',version:'17.0.1',createdAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(DB))};}
+  const BACKUP_VERSION='18.0.12';
+  const PREFIX=LS+'_v18_backup_';
+  const LEGACY_PREFIX=LS+'_v17_backup_';
+
+  function cloneDB(){return JSON.parse(JSON.stringify(DB));}
+  function snapshot(){
+    return {
+      format:'MesHeures Backup',
+      version:BACKUP_VERSION,
+      createdAt:new Date().toISOString(),
+      reason:'manual',
+      data:cloneDB()
+    };
+  }
+  function isValidPayload(raw){
+    const data=raw?.format==='MesHeures Backup'?raw.data:raw;
+    if(!data||typeof data!=='object'||!data.days||typeof data.days!=='object')
+      throw new Error('Structure JSON MesHeures non reconnue.');
+    return data;
+  }
+  function listKeys(){
+    return Object.keys(localStorage)
+      .filter(k=>k.indexOf(PREFIX)===0 || k.indexOf(LEGACY_PREFIX)===0)
+      .sort()
+      .reverse();
+  }
   function prune(){
     const keys=Object.keys(localStorage).filter(k=>k.indexOf(PREFIX)===0).sort();
     while(keys.length>5)localStorage.removeItem(keys.shift());
   }
-  window.mhV17Backup=function(reason){try{const s=snapshot(),key=PREFIX+Date.now();localStorage.setItem(key,JSON.stringify(s));localStorage.setItem(LS+'_v17_last',s.createdAt);prune();return true}catch(e){console.warn('Backup V17',e);return false}};
-  window.mhV17Export=function(){
-    mhV17Backup('export');
-    const blob=new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json;charset=utf-8'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='MesHeures-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  function stamp(){
+    const now=new Date().toISOString();
+    localStorage.setItem(LS+'_v18_last',now);
+    localStorage.setItem(LS+'_manualAt',now);
+    return now;
+  }
+
+  window.mhV17Backup=function(reason){
+    try{
+      const s=snapshot();s.reason=reason||'manual';
+      const key=PREFIX+Date.now();
+      localStorage.setItem(key,JSON.stringify(s));
+      const at=stamp();
+      prune();
+      return {ok:true,key,date:at};
+    }catch(e){console.warn('MesHeures backup',e);return {ok:false,error:e.message};}
   };
+
+  window.mhV17BackupStatus=function(){
+    const keys=listKeys();
+    let last=localStorage.getItem(LS+'_v18_last')||localStorage.getItem(LS+'_v17_last')||'';
+    if(!last&&keys.length){
+      try{last=JSON.parse(localStorage.getItem(keys[0]))?.createdAt||''}catch(e){}
+    }
+    return {count:keys.length,last};
+  };
+
+  window.mhV17Export=function(){
+    try{
+      const s=snapshot();s.reason='export';
+      const result=window.mhV17Backup('export');
+      if(!result.ok)throw new Error('Impossible de créer le point de sécurité avant export.');
+      const blob=new Blob([JSON.stringify(s,null,2)],{type:'application/json;charset=utf-8'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+      a.download='MesHeures-backup-V18-'+new Date().toISOString().slice(0,10)+'.json';
+      a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+      return true;
+    }catch(e){alert('❌ Export impossible : '+e.message);return false;}
+  };
+
   window.mhV17Import=function(input){
     const f=input?.files?.[0];if(!f)return;
-    const r=new FileReader();r.onload=e=>{try{
-      const raw=JSON.parse(e.target.result),data=raw?.format==='MesHeures Backup'?raw.data:raw;
-      if(!data?.days)throw new Error('Structure JSON MesHeures non reconnue.');
-      mhV17Backup('before-import');
-      if(!confirm('Importer cette sauvegarde V17 ? Une copie de sécurité vient d’être créée.'))return;
-      DB={...DB,...data,s:{...DEF,...(data.s||{})},per:{...DB.per,...(data.per||{})}};save();renderAll();alert('✅ Sauvegarde importée.');
-    }catch(err){alert('❌ Import impossible : '+err.message)}finally{input.value=''}};r.readAsText(f);
+    const r=new FileReader();
+    r.onload=e=>{
+      try{
+        const raw=JSON.parse(e.target.result),data=isValidPayload(raw);
+        const keys=Object.keys(data);
+        if(!confirm('Importer cette sauvegarde ? Les données actuelles seront remplacées par celles du fichier. Une copie de sécurité sera créée avant import.'))return;
+        const safety=window.mhV17Backup('before-import');
+        if(!safety.ok)throw new Error('Impossible de créer la sauvegarde de sécurité avant import.');
+        DB={...DB,...data,s:{...DEF,...DB.s,...(data.s||{})},per:{...DB.per,...(data.per||{})}};
+        save();renderAll();
+        alert('✅ Import réussi. '+keys.length+' bloc(s) de données restauré(s).');
+      }catch(err){alert('❌ Import impossible : '+err.message)}
+      finally{input.value=''}
+    };
+    r.onerror=()=>{input.value='';alert('❌ Lecture du fichier impossible.')};
+    r.readAsText(f);
   };
-  window.mhV17ListBackups=function(){return Object.keys(localStorage).filter(k=>k.indexOf(PREFIX)===0).sort().reverse().map(k=>{try{const s=JSON.parse(localStorage.getItem(k));return {key:k,date:s.createdAt}}catch(e){return null}}).filter(Boolean)};
-  window.mhV17Restore=function(key){try{const s=JSON.parse(localStorage.getItem(key));if(!s?.data?.days)throw new Error('Sauvegarde invalide');mhV17Backup('before-restore');if(!confirm('Restaurer cette sauvegarde locale ?'))return;DB={...DB,...s.data,s:{...DEF,...(s.data.s||{})}};save();renderAll();alert('✅ Restauration terminée.')}catch(e){alert('❌ Restauration impossible : '+e.message)}};
+
+  window.mhV17ListBackups=function(){
+    return listKeys().map(k=>{
+      try{const s=JSON.parse(localStorage.getItem(k));return {key:k,date:s.createdAt,version:s.version||'17.0.1',reason:s.reason||''};}
+      catch(e){return null;}
+    }).filter(Boolean);
+  };
+
+  window.mhV17Restore=function(key){
+    try{
+      const s=JSON.parse(localStorage.getItem(key));
+      const data=isValidPayload(s);
+      if(!confirm('Restaurer ce point de sauvegarde ? Une copie de l’état actuel sera créée avant restauration.'))return false;
+      const safety=window.mhV17Backup('before-restore');
+      if(!safety.ok)throw new Error('Impossible de créer la sauvegarde de sécurité avant restauration.');
+      DB={...DB,...data,s:{...DEF,...DB.s,...(data.s||{})},per:{...DB.per,...(data.per||{})}};
+      save();renderAll();alert('✅ Restauration terminée.');return true;
+    }catch(e){alert('❌ Restauration impossible : '+e.message);return false;}
+  };
+
+  // Compatibilité avec les anciens points V17 : ils restent lisibles, mais les nouveaux points sont V18.
 })();

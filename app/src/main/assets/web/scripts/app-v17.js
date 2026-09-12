@@ -1,6 +1,6 @@
 /* MesHeures V18 — interface, projection, conformité et migrations */
 (function(){
-  const V='18.0.11';
+  const V='18.0.12';
   function migrate(){
     DB.s=DB.s||{};
     if(DB.s.taux===14.02)DB.s.taux=14.20;
@@ -44,11 +44,29 @@
     const box=document.createElement('div');box.className='mh-v17-overlay';box.innerHTML=`<div class="mh-v17-dialog"><div class="mh-v17-sheet-head"><b>⚖️ Contrôle légal V17</b><button class="g" onclick="this.closest('.mh-v17-overlay').remove()">✕</button></div><p class="mut">Référentiel vérifié le 11/09/2026 · ${MH_LEGAL.ccn}</p><div class="mh-v17-legal-list">${al.length?al.map(a=>`<div class="al ${a.lvl}"><b>${a.k}</b> — ${esc(a.m)}<small>${esc(a.rule||'')}</small></div>`).join(''):'<div class="al k">✅ Aucun écart détecté par les contrôles V17 sur la période.</div>'}</div><hr><div class="mut">Minima ambulanciers : N1 ${MH_LEGAL.rules.ccnMin.n1.toFixed(2)} € · N2 ${MH_LEGAL.rules.ccnMin.n2.toFixed(2)} € · N3 ${MH_LEGAL.rules.ccnMin.n3.toFixed(2)} €. SMIC : ${MH_LEGAL.rules.smic.value.toFixed(2)} €.</div></div></div>`;document.body.appendChild(box);
   };
   window.mhV17BackupPanel=function(){
-    const list=window.mhV17ListBackups?.()||[];const box=document.createElement('div');box.className='mh-v17-overlay';box.innerHTML=`<div class="mh-v17-dialog"><div class="mh-v17-sheet-head"><b>💾 Centre de sauvegarde locale</b><button class="g" onclick="this.closest('.mh-v17-overlay').remove()">✕</button></div><div class="row"><button onclick="mhV17Export()">⬇ Export JSON</button><button class="g" onclick="document.getElementById('mhV17Import').click()">⬆ Import JSON</button><input id="mhV17Import" type="file" accept=".json" style="display:none" onchange="mhV17Import(this)"></div><div class="al i">Sauvegarde locale automatique avant import/restauration. Jusqu’à 5 points de restauration conservés.</div><div>${list.length?list.map(x=>`<div class="mh-v17-back"><span>💾 ${new Date(x.date).toLocaleString('fr-FR')}</span><button class="g" onclick="mhV17Restore('${x.key}');this.closest('.mh-v17-overlay').remove()">Restaurer</button></div>`).join(''):'<div class="mut">Aucun point V17 supplémentaire.</div>'}</div></div></div>`;document.body.appendChild(box);
+    const list=window.mhV17ListBackups?.()||[];
+    const status=window.mhV17BackupStatus?.()||{count:list.length,last:''};
+    const box=document.createElement('div');box.className='mh-v17-overlay';
+    box.innerHTML=`<div class="mh-v17-dialog">
+      <div class="mh-v17-sheet-head"><b>💾 Sauvegarde renforcée V18.0.12</b><button class="g" onclick="this.closest('.mh-v17-overlay').remove()">✕</button></div>
+      <div class="al i"><b>${status.count}</b> point(s) local(aux) conservé(s) · ${status.last?'dernier : '+new Date(status.last).toLocaleString('fr-FR'):'aucun point encore créé'}<br>Les nouveaux points sont conservés localement. Un export JSON permet une copie hors du téléphone.</div>
+      <div class="row">
+        <button onclick="const r=mhV17Backup('manual');if(r.ok){alert('✅ Point de restauration créé.');this.closest('.mh-v17-overlay').remove();mhV17BackupPanel()}else alert('❌ '+r.error)">💾 Créer un point maintenant</button>
+        <button class="g" onclick="mhV17Export()">⬇ Export JSON complet</button>
+        <button class="g" onclick="document.getElementById('mhV17Import').click()">⬆ Import JSON</button>
+        <input id="mhV17Import" type="file" accept=".json,application/json" style="display:none" onchange="mhV17Import(this)">
+      </div>
+      <div class="row" style="margin-top:7px">
+        <button class="g" onclick="if(typeof mhV18EncryptedBackup==='function')mhV18EncryptedBackup();else alert('Le backup chiffré V18 est indisponible sur cet écran.')">🔐 Export chiffré</button>
+      </div>
+      <div class="al i">Avant chaque import/restauration, MesHeures crée automatiquement un point de sécurité. Jusqu’à 5 points locaux V18 sont conservés. Les anciens points V17 restent restaurables.</div>
+      <div>${list.length?list.map(x=>`<div class="mh-v17-back"><span>💾 ${new Date(x.date).toLocaleString('fr-FR')} · ${x.version}</span><button class="g" onclick="if(mhV17Restore('${x.key}'))this.closest('.mh-v17-overlay').remove()">Restaurer</button></div>`).join(''):'<div class="mut">Aucun point de restauration local.</div>'}</div>
+    </div></div>`;
+    document.body.appendChild(box);
   };
   function addReg(){
     const host=document.getElementById('rBk');if(!host||document.getElementById('mhV17Reg'))return;
-    const c=document.createElement('div');c.id='mhV17Reg';c.className='mh-v17-reg';c.innerHTML='<b>V17 · sauvegarde renforcée</b><div class="row" style="margin-top:7px"><button class="g" onclick="mhV17Export()">💾 Export JSON complet</button><button class="g" onclick="mhV17BackupPanel()">🗂️ Points locaux</button></div><small>Dernier backup V17 : <span id="mhV17Last">—</span></small>';host.appendChild(c);document.getElementById('mhV17Last').textContent=localStorage.getItem(LS+'_v17_last')?new Date(localStorage.getItem(LS+'_v17_last')).toLocaleString('fr-FR'):'aucun';
+    const c=document.createElement('div');c.id='mhV17Reg';c.className='mh-v17-reg';c.innerHTML='<b>V18 · sauvegarde renforcée</b><div class="row" style="margin-top:7px"><button class="g" onclick="mhV17BackupPanel()">💾 Ouvrir le centre de sauvegarde</button><button class="g" onclick="mhV17Export()">⬇ Export JSON complet</button></div><small>Dernière sauvegarde : <span id="mhV17Last">—</span></small>';host.appendChild(c);const st=window.mhV17BackupStatus?.()||{};document.getElementById('mhV17Last').textContent=st.last?new Date(st.last).toLocaleString('fr-FR'):'aucune';
   }
   function legalCard(){
     const sec=document.getElementById('s-paie');if(!sec||document.getElementById('mhV17LegalCard'))return;
@@ -57,7 +75,7 @@
   function patchRender(){
     if(window.__mhV17Render)return;window.__mhV17Render=true;const old=window.renderAll;window.renderAll=function(){old();addReg();legalCard();injectHome();renderProjection();};
   }
-  function boot(){migrate();theme(DB.s.theme);if(document.getElementById('mhVersion'))document.getElementById('mhVersion').textContent='V18.0.11';buildNav();patchHome();patchRender();addReg();legalCard();injectHome();setTimeout(()=>{try{renderAll()}catch(e){console.error(e)}},0);}
+  function boot(){migrate();theme(DB.s.theme);if(document.getElementById('mhVersion'))document.getElementById('mhVersion').textContent='V18.0.12';buildNav();patchHome();patchRender();addReg();legalCard();injectHome();setTimeout(()=>{try{renderAll()}catch(e){console.error(e)}},0);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>{if(DB.s.theme==='auto')theme('auto')});
 })();
