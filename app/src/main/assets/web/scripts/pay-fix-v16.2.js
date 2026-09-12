@@ -8,7 +8,7 @@
  * - contrôle automatique de cohérence de période
  * - détail transparent du brut estimé
  * - résumé copiable
- * - version affichée uniformément en V17.0.0 tant que le socle APK reste 16.2
+ * - version affichée uniformément en V17.0.1 tant que le socle APK reste 16.2
  *
  * Aucun changement du moteur calcPer().
  */
@@ -54,8 +54,8 @@
     nodes.forEach(n => {
       if (/V16\.1\.0|V16\.2\.0/.test(n.nodeValue || '')) {
         n.nodeValue = n.nodeValue
-          .replace(/V16\.1\.0/g,'V17.0.0')
-          .replace(/V16\.2\.0/g,'V17.0.0');
+          .replace(/V16\.1\.0/g,'V17.0.1')
+          .replace(/V16\.2\.0/g,'V17.0.1');
       }
     });
   }
@@ -312,7 +312,8 @@
     });
   }
 
-  window.addEventListener('load', boot);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
 
   const observer = new MutationObserver(() => {
     wrapRenderPay();

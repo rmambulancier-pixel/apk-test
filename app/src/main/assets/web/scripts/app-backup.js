@@ -1,7 +1,7 @@
 /* MesHeures V17 — sauvegarde locale et JSON versionné */
 (function(){
   const PREFIX=LS+'_v17_backup_';
-  function snapshot(){return {format:'MesHeures Backup',version:'17.0.0',createdAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(DB))};}
+  function snapshot(){return {format:'MesHeures Backup',version:'17.0.1',createdAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(DB))};}
   function prune(){
     const keys=Object.keys(localStorage).filter(k=>k.indexOf(PREFIX)===0).sort();
     while(keys.length>5)localStorage.removeItem(keys.shift());

@@ -438,7 +438,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catc
    V15 — INTELLIGENCE / SÉCURITÉ / MODE PRO
    Couche additive : ne modifie pas les règles de calcul historiques.
 ═══════════════════════════════════════════════ */
-const MH_V='16.1';
+const MH_V='17.0.1';
 
 function mhMonthStats(ym){
   const [y,m]=ym.split('-').map(Number), last=isoOf(new Date(y,m,0));
@@ -609,53 +609,46 @@ function renderAudit(){
 
 /* Export V15 : enveloppe versionnée, import compatible avec les anciens JSON. */
 function expo(){
+  if(typeof mhV17Export==='function') return mhV17Export();
   const now=new Date().toISOString();
   DB.exp=new Date().toLocaleDateString('fr-FR');save();
   const payload={format:'MesHeures Backup',version:MH_V,exportedAt:now,data:DB};
   const b=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mesheures-v16-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);renderReg();
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mesheures-v17-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);renderReg();
 }
 function impo(i){
+  if(typeof mhV17Import==='function') return mhV17Import(i);
   const f=i.files[0];if(!f)return;
   const r=new FileReader();r.onload=e=>{try{
     const raw=JSON.parse(e.target.result),j=raw.data&&raw.format==='MesHeures Backup'?raw.data:raw;
     if(!j.days)throw new Error('Pas de données journalières');
-    if(!confirm('Importer cette sauvegarde et remplacer les données actuelles ?\n\nUne exportation de sécurité sera créée avant remplacement.'))return;
-    /* sécurité : copie locale avant remplacement */
-    localStorage.setItem(LS+'_preimport',JSON.stringify(DB));
-    pushUndo('Import JSON V15');
+    if(!confirm('Importer cette sauvegarde et remplacer les données actuelles ?'))return;
     DB={...DB,...j};DB.s={...DEF,...(j.s||{})};DB.periods=j.periods||[];DB.bul=j.bul||{};DB.bulletins=j.bulletins||[];DB.romi=j.romi||{};
-    save();renderAll();alert('✅ Import réussi — sauvegarde de sécurité locale créée.');
+    save();renderAll();alert('✅ Import réussi.');
   }catch(x){alert('Fichier illisible : '+x.message)}finally{i.value=''}};r.readAsText(f);
 }
 function mhRestorePreImport(){
-  const raw=localStorage.getItem(LS+'_preimport');if(!raw)return alert('Aucune sauvegarde pré-import disponible.');
-  if(!confirm('Restaurer la sauvegarde juste avant le dernier import ?'))return;
-  try{DB=JSON.parse(raw);save();renderAll();alert('✅ Sauvegarde pré-import restaurée.')}catch(e){alert('Restauration impossible : '+e.message)}
+  if(typeof mhV17ListBackups!=='function') return alert('Module de sauvegarde V17 indisponible.');
+  const list=mhV17ListBackups();
+  if(!list.length)return alert('Aucune sauvegarde V17 disponible.');
+  mhV17Restore(list[0].key);
 }
 function mhBackupLocal(){
-  localStorage.setItem(LS+'_manual',JSON.stringify(DB));DB.exp=new Date().toLocaleDateString('fr-FR');localStorage.setItem(LS+'_manualAt',new Date().toISOString());save();renderReg();alert('✅ Point de restauration local créé.');
+  if(typeof mhV17Backup==='function') { mhV17Backup('manual'); renderReg(); alert('✅ Point de restauration V17 créé.'); return; }
+  localStorage.setItem(LS+'_manual',JSON.stringify(DB));localStorage.setItem(LS+'_manualAt',new Date().toISOString());save();renderReg();alert('✅ Point de restauration local créé.');
 }
 function mhRestoreLocal(){
-  const raw=localStorage.getItem(LS+'_manual');if(!raw)return alert('Aucun point de restauration local.');
-  if(!confirm('Restaurer le dernier point de restauration local ?'))return;
-  try{DB=JSON.parse(raw);save();renderAll();alert('✅ Restauration terminée.')}catch(e){alert('Restauration impossible : '+e.message)}
+  if(typeof mhV17BackupPanel==='function') return mhV17BackupPanel();
+  alert('Centre de sauvegarde V17 indisponible.');
 }
 function mhTogglePro(){DB.s.proMode=!DB.s.proMode;save();document.body.classList.toggle('pro-mode',!!DB.s.proMode);renderReg();}
 
 function mhAutoBackup(){
-  try{
-    const last=Number(localStorage.getItem(LS+'_autoAt')||0),now=Date.now();
-    if(!last || now-last>24*60*60*1000){
-      localStorage.setItem(LS+'_auto',JSON.stringify(DB));
-      localStorage.setItem(LS+'_autoAt',new Date(now).toISOString());
-    }
-  }catch(e){console.warn('Sauvegarde auto impossible',e)}
+  if(typeof mhV17Backup==='function') return mhV17Backup('auto');
 }
 function mhRestoreAuto(){
-  const raw=localStorage.getItem(LS+'_auto'); if(!raw)return alert('Aucune sauvegarde automatique disponible.');
-  if(!confirm('Restaurer la dernière sauvegarde automatique ?'))return;
-  try{DB=JSON.parse(raw);save();renderAll();alert('✅ Sauvegarde automatique restaurée.')}catch(e){alert('Restauration impossible : '+e.message)}
+  if(typeof mhV17BackupPanel==='function') return mhV17BackupPanel();
+  alert('Centre de sauvegarde V17 indisponible.');
 }
 
 /* Compléments de réglages sans modifier le HTML historique. */
@@ -663,7 +656,7 @@ function renderReg(){
   renderRegBase();
   const bk=$('rBk');if(!bk)return;
   if(!document.getElementById('mhSecurity')){
-    const c=document.createElement('div');c.id='mhSecurity';c.className='security-box';c.innerHTML=`<div class="security-title">🛡️ Centre de sauvegarde V17</div><div class="security-actions"><button class="g" onclick="mhBackupLocal()">💾 Point local</button><button class="g" onclick="mhRestoreLocal()">↩️ Restaurer</button><button class="g" onclick="mhRestoreAuto()">♻️ Auto</button><button class="g" onclick="mhRestorePreImport()">🧯 Annuler import</button></div><label class="pro-switch"><input type="checkbox" id="mhProMode" onchange="mhTogglePro()"> Mode professionnel</label>`;bk.parentNode.insertBefore(c,bk.nextSibling);
+    const c=document.createElement('div');c.id='mhSecurity';c.className='security-box';c.innerHTML=`<div class="security-title">🛡️ Mode professionnel</div><label class="pro-switch"><input type="checkbox" id="mhProMode" onchange="mhTogglePro()"> Afficher les contrôles professionnels</label>`;bk.parentNode.insertBefore(c,bk.nextSibling);
   }
   $('mhProMode').checked=!!DB.s.proMode;
   document.body.classList.toggle('pro-mode',!!DB.s.proMode);
@@ -691,7 +684,7 @@ function mhDecoratePages(){
   });
 }
 
-if($('mhVersion'))$('mhVersion').textContent='V17.0.0';
+if($('mhVersion'))$('mhVersion').textContent='V17.0.1';
 mhDecoratePages();
 mhAutoBackup();
 setTimeout(()=>{try{renderAll()}catch(e){console.error('V15 render',e)}},0);
