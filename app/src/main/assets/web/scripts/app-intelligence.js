@@ -1,6 +1,6 @@
 /* MesHeures V18.0.1 — Lot 2 : intelligence locale, patterns, projection 12 semaines, alertes */
 (function(){
-  const V='18.0.4';
+  const V='18.0.5';
   const LEGAL_WEEK=46*60;
   const WORK=['T','NUIT'];
   const isWork=k=>WORK.includes(DB.days?.[k]?.t);

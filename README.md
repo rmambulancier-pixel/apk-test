@@ -1,8 +1,8 @@
-# MesHeures V18.0.1 — Android + PWA
+# MesHeures V18.0.5 — Android + PWA
 
 MesHeures est une application de suivi du temps de travail conçue pour le **transport sanitaire**, avec un focus sur le suivi des ambulanciers : saisie terrain, décompte par quatorzaine, projection, contrôle des amplitudes et du temps de travail, suivi de la paie, import de documents et sauvegardes locales.
 
-> **Version actuelle : V18.0.4 — versionCode Android 1804**
+> **Version actuelle : V18.0.5 — versionCode Android 1805**
 >
 > La V18 part de la base V17.0.1 validée et ajoute une couche d’intelligence locale : preuves, patterns récurrents, projection 12 semaines, alertes prédictives et dossier complet exportable.
 
@@ -121,7 +121,7 @@ Les règles sont utilisées comme aide au contrôle et à la détection d'écart
 - notification système si les permissions de l’appareil l’autorisent
 - l’alerte reste visible dans l’application si les notifications système ne sont pas disponibles
 
-## Dossier complet — V18.0.4 Lot 3
+## Dossier complet — V18.0.5 Lot 3
 
 Le Lot 3 ajoute un export probatoire unique :
 - dossier JSON regroupant les journées, bulletins, constats, événements et résultats d’intelligence locale ;
@@ -165,8 +165,8 @@ app/src/main/
 - Java : 17
 - Gradle : 8.9
 - Android Gradle Plugin : 8.7.3
-- versionCode : 1804
-- versionName : 18.0.4
+- versionCode : 1805
+- versionName : 18.0.5
 
 La signature de release repose sur la clé persistante configurée dans les secrets GitHub Actions. **Le keystore privé n'est pas stocké dans le dépôt.**
 
@@ -196,36 +196,42 @@ Une désinstallation n'est pas nécessaire pour une mise à jour signée compati
 
 Avant une évolution importante ou un changement de build, il est recommandé d'effectuer un **export JSON complet** depuis MesHeures. Le fichier JSON constitue une sauvegarde portable des données de l'application.
 
-## Extensions / plugins — V18.0.4 Lot 5
+## Extensions / plugins — V18.0.5 Lot 6
 
 MesHeures dispose d’un système d’extensions `.mhplugin` permettant d’ajouter des modules sans modifier le cœur de l’application.
 
 - exécution dans un `iframe` sandboxé ;
 - pas d’accès direct au DOM MesHeures ;
-- politique CSP locale du cadre plugin ;
-- accès réseau bloqué dans le cadre plugin ;
-- permission actuellement disponible : `snapshot` (statistiques du mois et ancienneté) ;
+- CSP du cadre plugin sans réseau ;
+- permissions explicites et strictement en lecture seule : `snapshot`, `days`, `pay`, `evidence`, `legal` ;
 - installation validée par manifeste et taille maximale de 180 Ko ;
 - refus des permissions inconnues ;
 - activation/désactivation et désinstallation ;
-- export de la liste des plugins installés ;
-- extension officielle de démonstration « Mes Droits ».
+- export/import des plugins utilisateur en format V2 ;
+- quatre extensions officielles : Mes Droits, Statistiques, Bulletin+, Dossier Prud’hommes.
 
-Le système est volontairement limité : une extension ne reçoit pas automatiquement les données de MesHeures. Elle doit déclarer une permission autorisée et utiliser l’API prévue. Les futures permissions devront être ajoutées explicitement et documentées.
+Règle d’architecture : une extension peut **lire, analyser, afficher et proposer**, mais ne peut jamais **écrire, supprimer ou modifier les heures, les paramètres ou le moteur de paie**.
 
-### V18.0.4
-- Lot 5 : système plugins renforcé et documenté
-- correction du numéro de version affiché dans l’interface : toutes les couches utilisent 18.0.4
-- Android versionCode 1804 / versionName 18.0.4
-- cache PWA et workflow APK alignés en 18.0.4
+### V18.0.5
+- Lot 6 : écosystème plugins en lecture seule + quatre extensions officielles
+- API permissions explicites et validation renforcée
+- kit développeur dans `plugins/`
+- Android versionCode 1805 / versionName 18.0.5
+- cache PWA et workflow APK alignés en 18.0.5
 
 ## Historique rapide
 
 ### V18.0.4
+- Lot 5 : premier système plugins sandboxé et correction du numéro de version
+
+### V18.0.3
+- Lot 4 : rapprochement paie / temps / bulletins
+
+### V18.0.2
 - Lot 3 : dossier complet exportable JSON/PDF
 - empreinte SHA-256 d’intégrité de l’export
 - regroupement historique + constats + événements + bulletins + intelligence locale
-- version Android/PWA/cache/workflow synchronisée en 18.0.4
+- version Android/PWA/cache/workflow synchronisée en 18.0.2
 
 ### V18.0.1
 - intelligence locale : motifs récurrents, projection 46 h/12 semaines et alertes prédictives
@@ -257,3 +263,17 @@ Le système est volontairement limité : une extension ne reçoit pas automatiqu
 ## Licence / usage
 
 Projet personnel et outil de suivi. Les règles réglementaires affichées dans l'application constituent un **outil d'aide au contrôle** et ne constituent pas un avis juridique.
+
+
+## V18.0.5 — Lot 6 : écosystème plugins
+- API plugins en lecture seule avec permissions explicites : `snapshot`, `days`, `pay`, `evidence`, `legal`.
+- Un plugin ne peut jamais écrire dans `DB`, modifier les journées, modifier les paramètres de paie ou appeler le moteur de paie pour changer ses résultats.
+- Exécution dans un iframe sandboxé avec CSP locale sans réseau.
+- 4 extensions officielles intégrées : Mes Droits, Statistiques, Bulletin+, Dossier Prud’hommes.
+- Import `.mhplugin` conservant validation d’identifiant, taille maximale 180 Ko et refus des permissions inconnues.
+- Export/import des extensions utilisateur en format V2.
+- Android `versionName 18.0.5` / `versionCode 1805`.
+- Numéro de version aligné entre interface, PWA, cache, Android et workflow.
+
+### Règle d’architecture
+Les plugins peuvent **lire, analyser, afficher et proposer**. Ils ne peuvent pas **écrire, supprimer ou recalculer/modifier** les données du cœur. Toute évolution future de l’API devra ajouter une permission explicite et rester en lecture seule par défaut.
